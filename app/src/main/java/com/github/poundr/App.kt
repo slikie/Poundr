@@ -1,11 +1,10 @@
 package com.github.poundr
 
 import android.app.Application
+import android.content.pm.PackageManager
 import android.content.pm.Signature
-import android.util.Log
-import com.github.poundr.hack.GrindrApplication
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
+import com.github.poundr.hack.GrindrPackageManager
+import com.google.firebase.installations.remote.FirebaseInstallationServiceClient
 import dagger.hilt.android.HiltAndroidApp
 
 private const val TAG = "App"
@@ -15,27 +14,31 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()
-        initializeFirebase()
     }
 
     private fun createNotificationChannels() {
         // TODO: Create notification channels
     }
 
-    private fun initializeFirebase() {
-        val grindrApplication = GrindrApplication(this)
+    private fun isFirebaseInstallationServiceClient() = Thread.currentThread().stackTrace.any {
+        it.className.startsWith(FirebaseInstallationServiceClient::class.java.name)
+    }
 
-        val firebaseOptions = FirebaseOptions.Builder()
-            .setDatabaseUrl("https://api-project-1036042917246.firebaseio.com")
-            .setGcmSenderId("1036042917246")
-            .setApiKey("AIzaSyDD5Ceh8j-a6Xw2R_seA7d5FZ5W09PcGkI")
-            .setApplicationId("1:1036042917246:android:93d3725a6ad2a74d")
-            .setStorageBucket("api-project-1036042917246.appspot.com")
-            .setProjectId("api-project-1036042917246")
-            .build()
+    override fun getPackageManager(): PackageManager {
+        val packageManager = super.getPackageManager()
+        return if (isFirebaseInstallationServiceClient()) {
+            GrindrPackageManager(packageManager)
+        } else {
+            packageManager
+        }
+    }
 
-        val defaultApp = FirebaseApp.initializeApp(grindrApplication, firebaseOptions)
-        Log.d(TAG, "initializeFirebase: defaultApp: $defaultApp")
+    override fun getPackageName(): String {
+        return if (isFirebaseInstallationServiceClient()) {
+            SPOOFED_PACKAGE_NAME
+        } else {
+            super.getPackageName()
+        }
     }
 
     companion object {

@@ -29,8 +29,7 @@ import com.github.poundr.App
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi", "QueryPermissionsNeeded")
 class GrindrPackageManager(
-    private val mBase: PackageManager,
-    private val packageName: String
+    private val mBase: PackageManager
 ) : PackageManager() {
     private fun getGrindrPackageInfo(): PackageInfo {
         val packageInfo = PackageInfo()
@@ -49,11 +48,7 @@ class GrindrPackageManager(
     }
 
     override fun getPackageInfo(versionedPackage: VersionedPackage, flags: Int): PackageInfo {
-        return if (versionedPackage.packageName == App.SPOOFED_PACKAGE_NAME) {
-            getGrindrPackageInfo()
-        } else {
-            mBase.getPackageInfo(versionedPackage, flags)
-        }
+        return mBase.getPackageInfo(versionedPackage, flags)
     }
 
     override fun currentToCanonicalPackageNames(packageNames: Array<out String>): Array<String> {
@@ -104,11 +99,7 @@ class GrindrPackageManager(
     }
 
     override fun getApplicationInfo(packageName: String, flags: Int): ApplicationInfo {
-        return if (packageName == App.SPOOFED_PACKAGE_NAME) {
-            mBase.getApplicationInfo(this.packageName, flags)
-        } else {
-            mBase.getApplicationInfo(packageName, flags)
-        }
+        return mBase.getApplicationInfo(packageName, flags)
     }
 
     override fun getActivityInfo(component: ComponentName, flags: Int): ActivityInfo {
@@ -120,12 +111,7 @@ class GrindrPackageManager(
     }
 
     override fun getServiceInfo(component: ComponentName, flags: Int): ServiceInfo {
-        val finalComponent = if (component.packageName == App.SPOOFED_PACKAGE_NAME) {
-            ComponentName(packageName, component.className)
-        } else {
-            component
-        }
-        return mBase.getServiceInfo(finalComponent, flags)
+        return mBase.getServiceInfo(component, flags)
     }
 
     override fun getProviderInfo(component: ComponentName, flags: Int): ProviderInfo {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firebase_database_url">https://api-project-1036042917246.firebaseio.com</string>
+    <string name="gcm_defaultSenderId">1036042917246</string>
+    <string name="google_api_key">AIzaSyDD5Ceh8j-a6Xw2R_seA7d5FZ5W09PcGkI</string>
+    <string name="google_app_id">1:1036042917246:android:93d3725a6ad2a74d</string>
+    <string name="google_storage_bucket">api-project-1036042917246.appspot.com</string>
+    <string name="project_id">api-project-1036042917246</string>
+</resources>
