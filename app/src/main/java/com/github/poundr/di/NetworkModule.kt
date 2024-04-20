@@ -2,6 +2,8 @@ package com.github.poundr.di
 
 import com.github.poundr.network.HeaderRequestInterceptor
 import com.github.poundr.network.LoginRestService
+import com.github.poundr.network.ServerDrivenCascadeService
+import com.github.poundr.network.SettingsRestService
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -60,5 +62,17 @@ class NetworkModule {
     @Singleton
     fun provideLoginRestService(retrofit: Retrofit, moshi: Moshi): LoginRestService {
         return retrofit.create(LoginRestService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideServerDrivenCascadeService(retrofit: Retrofit): ServerDrivenCascadeService {
+        return retrofit.create(ServerDrivenCascadeService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsRestService(retrofit: Retrofit): SettingsRestService {
+        return retrofit.create(SettingsRestService::class.java)
     }
 }

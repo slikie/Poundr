@@ -9,18 +9,20 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.github.poundr.model.AuthResponse
+import com.github.poundr.model.FcmPushRequest
 import com.github.poundr.model.LoginEmailRequest
 import com.github.poundr.model.Role
+import com.github.poundr.model.UpdateLocationRequest
 import com.github.poundr.network.LoginRestService
+import com.github.poundr.network.SettingsRestService
+import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -43,6 +45,7 @@ private val AUTH_TOKEN_KEY = stringPreferencesKey("auth_token")
 class UserManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val loginRestService: LoginRestService,
+    private val settingsRestService: SettingsRestService
 ) {
     var isReady: Boolean = false
         private set
@@ -90,14 +93,62 @@ class UserManager @Inject constructor(
                 }
             }
 
-            val response = loginRestService.postSessions(LoginEmailRequest(
-                email = email,
-                password = password,
-                authToken = null,
-                token = firebaseToken
-            ))
-
+            val response = loginRestService.postSessions(
+                LoginEmailRequest(
+                    email = email,
+                    password = password,
+                    authToken = null,
+                    token = firebaseToken
+                )
+            )
             setAuthResponse(response)
+        }
+    }
+
+    suspend fun pushFcmToken() {
+        withContext(Dispatchers.IO) {
+            val installationId = suspendCoroutine { continuation ->
+                FirebaseInstallations.getInstance().id.addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        continuation.resume(it.result)
+                    } else {
+                        continuation.resume(null)
+                    }
+                }
+            }
+
+            val firebaseToken = suspendCoroutine { continuation ->
+                FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        continuation.resume(it.result)
+                    } else {
+                        continuation.resume(null)
+                    }
+                }
+            }
+
+            if (installationId == null) {
+                Log.d(TAG, "pushFcmToken: Installation ID is null")
+                return@withContext
+            }
+
+            if (firebaseToken == null) {
+                Log.d(TAG, "pushFcmToken: Firebase token is null")
+                return@withContext
+            }
+
+            loginRestService.postGcmPushTokens(
+                FcmPushRequest(
+                    vendorProvidedIdentifier = installationId,
+                    token = firebaseToken
+                )
+            )
+        }
+    }
+
+    suspend fun putLocation(geohash: String) {
+        withContext(Dispatchers.IO) {
+            settingsRestService.putMeLocation(UpdateLocationRequest(geohash))
         }
     }
 
@@ -118,7 +169,9 @@ class UserManager @Inject constructor(
             settings[SESSION_ID_KEY] = response.sessionId
             settings[AUTH_TOKEN_KEY] = response.authToken
         }
+    }
 
-        _loggedIn.value = true
+    fun setLoggedIn(loggedIn: Boolean) {
+        _loggedIn.value = loggedIn
     }
 }

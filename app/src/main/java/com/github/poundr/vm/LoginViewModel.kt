@@ -1,13 +1,17 @@
 package com.github.poundr.vm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.poundr.GrindrExceptionFactory
 import com.github.poundr.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val TAG = "LoginViewModel"
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -22,6 +26,9 @@ class LoginViewModel @Inject constructor(
     private val _loggingIn = MutableStateFlow(false)
     val loggingIn = _loggingIn.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error = _error.asStateFlow()
+
     fun setEmail(email: String) {
         _email.value = email
     }
@@ -35,11 +42,19 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 userManager.login(_email.value, _password.value)
+                userManager.pushFcmToken()
+                userManager.putLocation("")
+                userManager.setLoggedIn(true)
             } catch (e: Exception) {
-                // Handle error
+                Log.e(TAG, "login: something went wrong", e)
+                _error.value = GrindrExceptionFactory.get(e).localizedMessage
+            } finally {
+                _loggingIn.value = false
             }
-        }.invokeOnCompletion {
-            _loggingIn.value = false
         }
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 }

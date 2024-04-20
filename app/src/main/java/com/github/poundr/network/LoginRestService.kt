@@ -1,7 +1,9 @@
 package com.github.poundr.network
 
 import com.github.poundr.model.AuthResponse
+import com.github.poundr.model.FcmPushRequest
 import com.github.poundr.model.LoginEmailRequest
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -10,11 +12,11 @@ interface LoginRestService {
 //    @Headers("requireRealDeviceInfo: true")
 //    @POST("v3/users/password-validation")
 //    suspend fun postPasswordValidation(@Body validatePasswordComplexityRequest: ValidatePasswordComplexityRequest): Unit
-//
-//    @Headers("requireRealDeviceInfo: true")
-//    @POST("v3/gcm-push-tokens")
-//    suspend fun postGcmPushTokens(@Body fcmPushRequest: FcmPushRequest): Unit
-//
+
+    @Headers("requireRealDeviceInfo: true")
+    @POST("v3/gcm-push-tokens")
+    suspend fun postGcmPushTokens(@Body fcmPushRequest: FcmPushRequest)
+
 //    @Headers("requireRealDeviceInfo: true")
 //    @POST("v3/users/update-password")
 //    suspend fun postUpdatePassword(@Body changePasswordRequest: ChangePasswordRequest): ChangePasswordResponse
