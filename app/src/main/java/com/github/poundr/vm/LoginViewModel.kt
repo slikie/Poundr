@@ -43,7 +43,6 @@ class LoginViewModel @Inject constructor(
             try {
                 userManager.login(_email.value, _password.value)
                 userManager.pushFcmToken()
-                userManager.putLocation("")
                 userManager.setLoggedIn(true)
             } catch (e: Exception) {
                 Log.e(TAG, "login: something went wrong", e)

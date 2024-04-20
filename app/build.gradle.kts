@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
     implementation(libs.coil.coil.compose)
+    implementation(libs.androidx.material)
 }
 
 // Allow references to generated code

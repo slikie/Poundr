@@ -3,6 +3,7 @@ package com.github.poundr.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.poundr.UserManager
 import com.github.poundr.network.ServerDrivenCascadeService
 import com.squareup.moshi.JsonReader
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,14 +16,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BrowseViewModel @Inject constructor(
+    private val userManager: UserManager,
     private val serverDrivenCascadeService: ServerDrivenCascadeService,
 ) : ViewModel() {
+    private val _refreshing = MutableStateFlow(false)
+    val refreshing = _refreshing.asStateFlow()
+
     private val _profiles = MutableStateFlow(emptyList<String>())
     val profiles = _profiles.asStateFlow()
 
     init {
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
+            _refreshing.value = true
             fetchData()
+            _refreshing.value = false
         }
     }
 

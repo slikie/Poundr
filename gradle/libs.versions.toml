@@ -57,6 +57,7 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 coil-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-material = { group = "androidx.compose.material", name = "material" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
