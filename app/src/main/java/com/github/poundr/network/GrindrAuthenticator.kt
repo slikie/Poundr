@@ -9,6 +9,9 @@ import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class GrindrAuthenticator @Inject constructor(
@@ -17,13 +20,16 @@ class GrindrAuthenticator @Inject constructor(
     override fun authenticate(route: Route?, response: Response): Request? {
         val userManager = lazyUserManager.get()
 
+        // Get the server date
+        val serverDate = parseHttpDate(response.header("Date")) ?: Date()
+
         // Check if the token is expired
-        if (!Jwt.isExpired(userManager.sessionId)) return null
+        if (!Jwt.isExpired(userManager.sessionId, serverDate)) return null
 
         // Avoid multiple threads refreshing the token
         synchronized(this) {
             // Check if the token is still expired
-            if (Jwt.isExpired(userManager.sessionId)) {
+            if (Jwt.isExpired(userManager.sessionId, serverDate)) {
                 // Refresh the token
                 runBlocking { userManager.refreshToken() }
             }
@@ -46,5 +52,15 @@ class GrindrAuthenticator @Inject constructor(
         return response.request.newBuilder()
             .headers(headers)
             .build()
+    }
+
+    private fun parseHttpDate(date: String?): Date? {
+        if (date == null) return null
+        val format = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
+        return try {
+            format.parse(date)
+        } catch (e: Exception) {
+            null
+        }
     }
 }
