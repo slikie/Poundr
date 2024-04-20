@@ -71,7 +71,8 @@ fun BrowseScreen(
                 items(profiles) { profile ->
                     GridProfile(
                         modifier = Modifier.fillMaxWidth(),
-                        name = profile,
+                        imageId = profile.imageId,
+                        name = profile.name,
                     )
                 }
             }

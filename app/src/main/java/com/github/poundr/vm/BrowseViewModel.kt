@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.poundr.UserManager
 import com.github.poundr.network.ServerDrivenCascadeService
+import com.github.poundr.ui.GridProfileModel
 import com.squareup.moshi.JsonReader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +24,7 @@ class BrowseViewModel @Inject constructor(
     private val _refreshing = MutableStateFlow(false)
     val refreshing = _refreshing.asStateFlow()
 
-    private val _profiles = MutableStateFlow(emptyList<String>())
+    private val _profiles = MutableStateFlow(emptyList<GridProfileModel>())
     val profiles = _profiles.asStateFlow()
 
     init {
@@ -39,6 +41,7 @@ class BrowseViewModel @Inject constructor(
 
     suspend fun fetchData() = withContext(Dispatchers.IO) {
         try {
+            userManager.putLocation("")
             val responseBody = serverDrivenCascadeService.getCascadePage(
                 nearbyGeoHash = "",
                 exploreGeoHash = null,
@@ -68,7 +71,7 @@ class BrowseViewModel @Inject constructor(
                 favorites = false
             )
 
-            val items = mutableListOf<String>()
+            val items = mutableListOf<GridProfileModel>()
             var nextPage = 0
 
             val reader = JsonReader.of(responseBody.source())
@@ -87,10 +90,13 @@ class BrowseViewModel @Inject constructor(
             _profiles.value = items
         } catch (e: Exception) {
             e.printStackTrace()
+            if (e is HttpException) {
+                Log.d("BrowseViewModel", "fetchData: ${e.response()?.errorBody()?.string()}")
+            }
         }
     }
 
-    private fun parseItems(reader: JsonReader, items: MutableList<String>) {
+    private fun parseItems(reader: JsonReader, items: MutableList<GridProfileModel>) {
         reader.beginArray()
         while (reader.hasNext()) {
             reader.beginObject()
@@ -98,13 +104,27 @@ class BrowseViewModel @Inject constructor(
                 when (reader.nextName()) {
                     "data" -> {
                         reader.beginObject()
+                        var imageId: String? = null
+                        var displayName = ""
                         while (reader.hasNext()) {
                             when (reader.nextName()) {
-                                "displayName" -> { items.add(reader.nextString()) }
+                                "displayName" -> { displayName = reader.nextString() }
+                                "photoMediaHashes" -> {
+                                    reader.beginArray()
+                                    while (reader.hasNext()) {
+                                        if (imageId == null) {
+                                            imageId = reader.nextString()
+                                        } else {
+                                            reader.skipValue()
+                                        }
+                                    }
+                                    reader.endArray()
+                                }
                                 else -> { reader.skipValue() }
                             }
                         }
                         reader.endObject()
+                        items.add(GridProfileModel(imageId, displayName))
                     }
                     else -> { reader.skipValue() }
                 }

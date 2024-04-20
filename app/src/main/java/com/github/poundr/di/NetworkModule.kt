@@ -1,5 +1,7 @@
 package com.github.poundr.di
 
+import com.github.poundr.ImageRepository
+import com.github.poundr.network.GrindrAuthenticator
 import com.github.poundr.network.HeaderRequestInterceptor
 import com.github.poundr.network.LoginRestService
 import com.github.poundr.network.ServerDrivenCascadeService
@@ -47,6 +49,7 @@ class NetworkModule {
     @Singleton
     fun provideOkHttpClient(
         headerRequestInterceptor: HeaderRequestInterceptor,
+        grindrAuthenticator: GrindrAuthenticator,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .followRedirects(false)
@@ -55,6 +58,7 @@ class NetworkModule {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            .authenticator(grindrAuthenticator)
             .build()
     }
 
@@ -74,5 +78,11 @@ class NetworkModule {
     @Singleton
     fun provideSettingsRestService(retrofit: Retrofit): SettingsRestService {
         return retrofit.create(SettingsRestService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageRepository(): ImageRepository {
+        return ImageRepository(MEDIA_CDN_ENDPOINT)
     }
 }

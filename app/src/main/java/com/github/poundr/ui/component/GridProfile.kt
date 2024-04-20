@@ -21,24 +21,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.github.poundr.R
 
 @Composable
 fun GridProfile(
     modifier: Modifier = Modifier,
+    imageId: String?,
     name: String
 ) {
     Box(
         modifier = modifier.aspectRatio(1f)
     ) {
-        Image(
-            painter = painterResource(R.drawable.google_logo),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.Center),
-            contentScale = ContentScale.Crop
-        )
+        if (imageId == null) {
+            Image(
+                painter = painterResource(R.drawable.google_logo),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            AsyncImage(
+                model = "https://cdns.grindr.com/images/thumb/320x320/$imageId",
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize().align(Alignment.Center),
+                placeholder = painterResource(R.drawable.google_logo),
+                contentScale = ContentScale.Crop
+            )
+        }
 
         Text(
             text = name,
@@ -73,6 +85,7 @@ fun GridProfile(
 private fun GridProfilePreview() {
     Surface {
         GridProfile(
+            imageId = null,
             name = "Test name"
         )
     }
