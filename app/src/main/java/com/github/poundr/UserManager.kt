@@ -214,26 +214,24 @@ class UserManager @Inject constructor(
     }
 
     suspend fun refreshToken() {
-        withContext(Dispatchers.IO) {
-            val firebaseToken = suspendCoroutine { continuation ->
-                FirebaseMessaging.getInstance().token.addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        continuation.resume(it.result)
-                    } else {
-                        continuation.resume(null)
-                    }
+        val firebaseToken = suspendCoroutine { continuation ->
+            FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    continuation.resume(it.result)
+                } else {
+                    continuation.resume(null)
                 }
             }
-
-            val response = loginRestService.postSessions(
-                LoginEmailRequest(
-                    email = email,
-                    password = null,
-                    authToken = authToken,
-                    token = firebaseToken
-                )
-            )
-            setAuthResponse(email, response)
         }
+
+        val response = loginRestService.postSessions(
+            LoginEmailRequest(
+                email = email,
+                password = null,
+                authToken = authToken,
+                token = firebaseToken
+            )
+        )
+        setAuthResponse(email, response)
     }
 }
