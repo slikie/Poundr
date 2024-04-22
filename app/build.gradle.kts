@@ -89,6 +89,10 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.coil.coil.compose)
     implementation(libs.androidx.material)
+    implementation(libs.google.play.services.location)
+    implementation(libs.google.accompanist.permissions)
+    implementation(libs.google.accompanist.webview)
+    implementation(libs.androidx.compose.foundation)
 }
 
 // Allow references to generated code

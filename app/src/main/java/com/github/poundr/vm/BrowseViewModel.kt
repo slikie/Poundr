@@ -3,9 +3,11 @@ package com.github.poundr.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.poundr.PoundrLocationManager
 import com.github.poundr.UserManager
 import com.github.poundr.network.ServerDrivenCascadeService
 import com.github.poundr.ui.GridProfileModel
+import com.github.poundr.utils.GeoHash
 import com.squareup.moshi.JsonReader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,16 +22,13 @@ import javax.inject.Inject
 class BrowseViewModel @Inject constructor(
     private val userManager: UserManager,
     private val serverDrivenCascadeService: ServerDrivenCascadeService,
+    private val poundrLocationManager: PoundrLocationManager
 ) : ViewModel() {
     private val _refreshing = MutableStateFlow(false)
     val refreshing = _refreshing.asStateFlow()
 
     private val _profiles = MutableStateFlow(emptyList<GridProfileModel>())
     val profiles = _profiles.asStateFlow()
-
-    init {
-        refresh()
-    }
 
     fun refresh() {
         viewModelScope.launch {
@@ -41,9 +40,10 @@ class BrowseViewModel @Inject constructor(
 
     suspend fun fetchData() = withContext(Dispatchers.IO) {
         try {
-            userManager.putLocation("")
+            val location = poundrLocationManager.getLastLocation() ?: poundrLocationManager.getCurrentLocation() ?: return@withContext
+            val geohash = GeoHash.encode(location.latitude, location.longitude, GeoHash.MAX_PRECISION)
             val responseBody = serverDrivenCascadeService.getCascadePage(
-                nearbyGeoHash = "",
+                nearbyGeoHash = geohash,
                 exploreGeoHash = null,
                 onlineOnly = false,
                 photoOnly = false,

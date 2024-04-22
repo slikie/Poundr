@@ -14,7 +14,15 @@ object GrindrExceptionFactory {
 
     private fun getHttpException(e: HttpException): Throwable {
         return when (e.code()) {
+            400 -> IllegalArgumentException(e.message()) // TODO (When geohash is invalid, error body is "Invalid geohash")
             401 -> GrindrUnknownException()
+            else -> e
+        }
+    }
+
+    private fun getHttp400Exception(e: HttpException): Throwable {
+        return when {
+            e.message() == "Invalid geohash" -> GrindrInvalidGeohashException()
             else -> e
         }
     }
@@ -22,3 +30,4 @@ object GrindrExceptionFactory {
 
 class GrindrNoInternetException : Exception("No internet connection")
 class GrindrUnknownException : Exception("Unknown error")
+class GrindrInvalidGeohashException : Exception("Invalid geohash")

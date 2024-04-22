@@ -42,8 +42,6 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 userManager.login(_email.value, _password.value)
-                userManager.pushFcmToken()
-                userManager.setLoggedIn(true)
             } catch (e: Exception) {
                 Log.e(TAG, "login: something went wrong", e)
                 _error.value = GrindrExceptionFactory.get(e).localizedMessage

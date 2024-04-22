@@ -35,7 +35,7 @@ fun GridProfile(
     ) {
         if (imageId == null) {
             Image(
-                painter = painterResource(R.drawable.google_logo),
+                painter = painterResource(R.drawable.profile_pic_placeholder),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()

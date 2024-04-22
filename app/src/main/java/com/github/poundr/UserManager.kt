@@ -52,6 +52,9 @@ class UserManager @Inject constructor(
     private val _loggedIn = MutableStateFlow(false)
     val loggedIn = _loggedIn.asStateFlow()
 
+    var shouldSendFcmToken: Boolean = false
+        private set
+
     /* Auth data */
     var email: String = ""
         private set
@@ -104,6 +107,7 @@ class UserManager @Inject constructor(
                 )
             )
 
+            shouldSendFcmToken = true
 
             setAuthResponse(email, response)
         }
@@ -147,6 +151,8 @@ class UserManager @Inject constructor(
                     token = firebaseToken
                 )
             )
+
+            shouldSendFcmToken = false
         }
     }
 
@@ -172,6 +178,8 @@ class UserManager @Inject constructor(
         setXmppToken(response.xmppToken)
         setSessionId(response.sessionId)
         setAuthToken(response.authToken)
+
+        _loggedIn.value = true
     }
 
     suspend fun setEmail(email: String) = withContext(Dispatchers.IO) {
@@ -207,10 +215,6 @@ class UserManager @Inject constructor(
         context.dataStore.edit { settings ->
             settings[AUTH_TOKEN_KEY] = authToken
         }
-    }
-
-    fun setLoggedIn(loggedIn: Boolean) {
-        _loggedIn.value = loggedIn
     }
 
     suspend fun refreshToken() {

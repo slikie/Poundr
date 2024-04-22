@@ -31,7 +31,12 @@ fun PoundrApp(
                 startDestination = startDestination
             ) {
                 composable("login") {
-                    LoginScreen()
+                    LoginScreen(
+                        navigateToSignUp = {}
+                    )
+                }
+                composable("register") {
+//                    RegisterScreen()
                 }
                 composable("main") {
                     MainScreen(mainViewModel)
