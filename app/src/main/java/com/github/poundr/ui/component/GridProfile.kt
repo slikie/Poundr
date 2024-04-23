@@ -2,6 +2,7 @@ package com.github.poundr.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,10 +29,11 @@ import com.github.poundr.R
 fun GridProfile(
     modifier: Modifier = Modifier,
     imageId: String?,
-    name: String
+    name: String,
+    onClick: () -> Unit
 ) {
     Box(
-        modifier = modifier.aspectRatio(1f)
+        modifier = modifier.aspectRatio(1f).clickable(onClick = onClick)
     ) {
         if (imageId == null) {
             Image(
@@ -47,7 +49,7 @@ fun GridProfile(
                 model = "https://cdns.grindr.com/images/thumb/320x320/$imageId",
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize().align(Alignment.Center),
-                placeholder = painterResource(R.drawable.google_logo),
+                placeholder = painterResource(R.drawable.profile_pic_placeholder),
                 contentScale = ContentScale.Crop
             )
         }
@@ -86,7 +88,8 @@ private fun GridProfilePreview() {
     Surface {
         GridProfile(
             imageId = null,
-            name = "Test name"
+            name = "Test name",
+            onClick = {}
         )
     }
 }

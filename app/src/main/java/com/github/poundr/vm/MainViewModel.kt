@@ -3,9 +3,9 @@ package com.github.poundr.vm
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.poundr.PoundrLocationManager
 import com.github.poundr.UserManager
-import com.github.poundr.utils.GeoHash
+import com.github.poundr.location.GeoHash
+import com.github.poundr.location.PoundrLocationManager
 import com.google.android.gms.location.LocationRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

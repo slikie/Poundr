@@ -2,6 +2,7 @@ package com.github.poundr.ui.screen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -9,9 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.github.poundr.ui.component.PagerProfile
 import com.github.poundr.vm.MainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -21,7 +25,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
     val shouldSendFcmToken = remember(viewModel) { viewModel.shouldSendFcmToken }
     if (shouldSendFcmToken) {
@@ -71,10 +75,28 @@ fun MainScreen(
         startDestination = if (coarseLocationPermissionState.status.isGranted) "home" else "location",
     ) {
         composable("home") {
-            HomeScreen()
+            HomeScreen(
+                onBrowseProfile = { profilePosition ->
+                    navController.navigate("profile/$profilePosition")
+                }
+            )
         }
         composable("location") {
 //            LocationScreen()
+        }
+        composable(
+            route = "profile/{profileId}",
+            arguments = listOf(navArgument("profileId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val profileId = backStackEntry.arguments?.getInt("profileId")
+            LaunchedEffect(profileId) {
+                Log.d("MainScreen", "Profile ID: $profileId")
+            }
+            if (profileId != null) {
+                PagerProfile(
+                    initialProfile = profileId
+                )
+            }
         }
     }
 }

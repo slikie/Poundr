@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.poundr.model.ServerDrivenCascadeApiItem
 import com.github.poundr.ui.component.GridProfile
 import com.github.poundr.vm.BrowseViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -39,11 +40,12 @@ import com.google.accompanist.permissions.rememberPermissionState
 )
 @Composable
 fun BrowseScreen(
-    viewModel: BrowseViewModel = hiltViewModel()
+    viewModel: BrowseViewModel = hiltViewModel(),
+    onBrowseProfile: (Int) -> Unit
 ) {
     val coarseLocationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_COARSE_LOCATION)
     if (coarseLocationPermissionState.status.isGranted) {
-        LaunchedEffect(Unit) {
+        LaunchedEffect(viewModel) {
             viewModel.refresh()
         }
 
@@ -83,12 +85,25 @@ fun BrowseScreen(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    items(profiles) { profile ->
-                        GridProfile(
-                            modifier = Modifier.fillMaxWidth(),
-                            imageId = profile.imageId,
-                            name = profile.name,
-                        )
+                    itemsIndexed(profiles) { index, profile ->
+                        when (profile) {
+                            is ServerDrivenCascadeApiItem.Profile -> {
+                                GridProfile(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    imageId = profile.data.photoMediaHashes?.firstOrNull(),
+                                    name = profile.data.displayName ?: "",
+                                    onClick = { onBrowseProfile(index) }
+                                )
+                            }
+                            is ServerDrivenCascadeApiItem.PartialProfile -> {
+                                GridProfile(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    imageId = profile.data.photoMediaHashes?.firstOrNull(),
+                                    name = profile.data.displayName ?: "",
+                                    onClick = { onBrowseProfile(index) }
+                                )
+                            }
+                        }
                     }
                 }
 

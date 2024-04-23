@@ -1,4 +1,4 @@
-package com.github.poundr
+package com.github.poundr.location
 
 import android.content.Context
 import android.location.Location

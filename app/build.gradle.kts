@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.google.hilt.android)
     kapt(libs.google.hilt.android.compiler)
     implementation(libs.square.moshi)
+    implementation(libs.square.moshi.adapters)
     ksp(libs.square.moshi.kotlin.codegen)
     implementation(libs.square.okhttp)
     implementation(libs.square.logging.interceptor)

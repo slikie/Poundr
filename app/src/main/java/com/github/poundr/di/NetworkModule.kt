@@ -1,12 +1,15 @@
 package com.github.poundr.di
 
 import com.github.poundr.ImageRepository
+import com.github.poundr.model.ServerDrivenCascadeApiItem
+import com.github.poundr.network.ChatRestService
 import com.github.poundr.network.GrindrAuthenticator
 import com.github.poundr.network.HeaderRequestInterceptor
 import com.github.poundr.network.LoginRestService
 import com.github.poundr.network.ServerDrivenCascadeService
 import com.github.poundr.network.SettingsRestService
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +35,15 @@ class NetworkModule {
     @Provides
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
+            .add(
+                PolymorphicJsonAdapterFactory.of(ServerDrivenCascadeApiItem::class.java, ServerDrivenCascadeApiItem.KEY)
+                    .withSubtype(ServerDrivenCascadeApiItem.FavoritesHeader::class.java, ServerDrivenCascadeApiItem.FAVS_HEADER)
+                    .withSubtype(ServerDrivenCascadeApiItem.FavoritesNoFreeResults::class.java, ServerDrivenCascadeApiItem.FAVS_NO_FREE_RESULTS)
+                    .withSubtype(ServerDrivenCascadeApiItem.FavoritesNoXtraResults::class.java, ServerDrivenCascadeApiItem.FAVS_NO_XTRA_RESULTS)
+                    .withSubtype(ServerDrivenCascadeApiItem.PartialProfile::class.java, ServerDrivenCascadeApiItem.PARTIAL_PROFILE)
+                    .withSubtype(ServerDrivenCascadeApiItem.Profile::class.java, ServerDrivenCascadeApiItem.FULL_PROFILE)
+                    .withDefaultValue(ServerDrivenCascadeApiItem.Unknown())
+            )
             .build()
     }
 
@@ -84,5 +96,11 @@ class NetworkModule {
     @Singleton
     fun provideImageRepository(): ImageRepository {
         return ImageRepository(MEDIA_CDN_ENDPOINT)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatRestService(retrofit: Retrofit): ChatRestService {
+        return retrofit.create(ChatRestService::class.java)
     }
 }

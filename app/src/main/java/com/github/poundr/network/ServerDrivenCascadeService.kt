@@ -1,6 +1,6 @@
 package com.github.poundr.network
 
-import okhttp3.ResponseBody
+import com.github.poundr.model.ServerDrivenCascadePage
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -33,5 +33,5 @@ interface ServerDrivenCascadeService {
         @Query("genders") genders: String?,
         @Query("rightNow") rightNow: Boolean?,
         @Query("favorites") favorites: Boolean?
-    ): ResponseBody
+    ): ServerDrivenCascadePage
 }

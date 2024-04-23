@@ -1,4 +1,4 @@
-package com.github.poundr.utils
+package com.github.poundr.location
 
 object GeoHash {
     const val MAX_PRECISION = 12
