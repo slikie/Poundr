@@ -1,5 +1,6 @@
 package com.github.poundr.network
 
+import android.util.Log
 import com.github.poundr.UserManager
 import com.github.poundr.utils.Jwt
 import dagger.Lazy
@@ -14,6 +15,8 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+private const val TAG = "GrindrAuthenticator"
+
 class GrindrAuthenticator @Inject constructor(
     private val lazyUserManager: Lazy<UserManager>,
 ) : Authenticator {
@@ -24,14 +27,21 @@ class GrindrAuthenticator @Inject constructor(
         val serverDate = parseHttpDate(response.header("Date")) ?: Date()
 
         // Check if the token is expired
-        if (!Jwt.isExpired(userManager.sessionId, serverDate)) return null
+        var forceRefresh = false
+        if (!Jwt.isExpired(userManager.sessionId, serverDate)) {
+            val exp = Jwt.getExp(userManager.sessionId)
+            Log.w(TAG, "Server responded with 401 but token is not expired! (exp: $exp, now: ${serverDate.time / 1000})")
+            forceRefresh = true
+        }
 
         // Avoid multiple threads refreshing the token
         synchronized(this) {
             // Check if the token is still expired
-            if (Jwt.isExpired(userManager.sessionId, serverDate)) {
+            if (forceRefresh || Jwt.isExpired(userManager.sessionId, serverDate)) {
                 // Refresh the token
+                Log.d(TAG, "Refreshing token (forceRefresh: $forceRefresh)")
                 runBlocking { userManager.refreshToken() }
+                forceRefresh = false
             }
         }
 
