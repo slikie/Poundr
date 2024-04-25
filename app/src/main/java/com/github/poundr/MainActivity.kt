@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.ViewModelProvider
 import com.github.poundr.ui.PoundrApp
 import com.github.poundr.vm.MainViewModel
@@ -35,7 +36,7 @@ class MainActivity : ComponentActivity() {
             }
         )
 
-//        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
 
         setContent { PoundrApp(mainViewModel) }
     }

@@ -24,7 +24,7 @@ import android.content.res.XmlResourceParser
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.UserHandle
-import com.github.poundr.App
+import com.github.poundr.PoundrApplication
 
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi", "QueryPermissionsNeeded")
@@ -33,14 +33,14 @@ class GrindrPackageManager(
 ) : PackageManager() {
     private fun getGrindrPackageInfo(): PackageInfo {
         val packageInfo = PackageInfo()
-        packageInfo.versionCode = App.SPOOFED_VERSION_CODE
-        packageInfo.versionName = App.SPOOFED_VERSION_NAME
-        packageInfo.signatures = App.SPOOFED_SIGNATURES
+        packageInfo.versionCode = PoundrApplication.SPOOFED_VERSION_CODE
+        packageInfo.versionName = PoundrApplication.SPOOFED_VERSION_NAME
+        packageInfo.signatures = PoundrApplication.SPOOFED_SIGNATURES
         return packageInfo
     }
 
     override fun getPackageInfo(packageName: String, flags: Int): PackageInfo {
-        return if (packageName == App.SPOOFED_PACKAGE_NAME) {
+        return if (packageName == PoundrApplication.SPOOFED_PACKAGE_NAME) {
             getGrindrPackageInfo()
         } else {
             mBase.getPackageInfo(packageName, flags)

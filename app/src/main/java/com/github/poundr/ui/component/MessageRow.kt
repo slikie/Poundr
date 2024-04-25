@@ -1,6 +1,7 @@
 package com.github.poundr.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ fun MessageRow(
     name: String,
     lastMessage: String,
     lastMessageTime: Long,
+    onClick: () -> Unit
 ) {
     var elapsedTimeString by remember(lastMessageTime) {
         mutableStateOf(getElapsedTimeString(lastMessageTime))
@@ -51,7 +53,8 @@ fun MessageRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(100.dp)
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -118,7 +121,8 @@ private fun MessageRowPreview() {
             imageId = null,
             name = "John Doe",
             lastMessage = "Hello, world!",
-            lastMessageTime = System.currentTimeMillis()
+            lastMessageTime = System.currentTimeMillis() - 43.minutes.inWholeMilliseconds,
+            onClick = {}
         )
     }
 }

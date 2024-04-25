@@ -38,7 +38,8 @@ private enum class HomeRoute(
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onBrowseProfile: (Int) -> Unit
+    onBrowseProfile: (Int) -> Unit,
+    onConversationClick: (String) -> Unit
 ) {
     val navController = rememberNavController()
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
@@ -70,7 +71,9 @@ fun HomeScreen(
                 )
             }
             composable(HomeRoute.MESSAGES.route) {
-                MessagesScreen()
+                MessagesScreen(
+                    onConversationClick = onConversationClick
+                )
             }
             composable(HomeRoute.TAPS.route) {
                 TapsScreen()

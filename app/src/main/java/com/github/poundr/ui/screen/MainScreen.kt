@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +22,28 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
+
+sealed class MainScreenScreen(
+    val route: String,
+    val arguments: List<NamedNavArgument> = emptyList(),
+) {
+    data object Home : MainScreenScreen("home")
+    data object Location : MainScreenScreen("location")
+    data object Profile : MainScreenScreen(
+        route = "profile/{profileId}",
+        arguments = listOf(
+            navArgument("profileId") { type = NavType.IntType }
+        )
+    )
+    data object Conversation : MainScreenScreen(
+        route = "conversation/{conversationId}",
+        arguments = listOf(
+            navArgument("conversationId") { type = NavType.StringType }
+        )
+    ) {
+        fun createRoute(conversationId: String) = "conversation/$conversationId"
+    }
+}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -74,19 +97,30 @@ fun MainScreen(
         navController = navController,
         startDestination = if (coarseLocationPermissionState.status.isGranted) "home" else "location",
     ) {
-        composable("home") {
+        composable(
+            route = MainScreenScreen.Home.route,
+            arguments = MainScreenScreen.Home.arguments
+        ) {
             HomeScreen(
                 onBrowseProfile = { profilePosition ->
                     navController.navigate("profile/$profilePosition")
+                },
+                onConversationClick = { conversationId ->
+                    navController.navigate("conversation/$conversationId")
                 }
             )
         }
-        composable("location") {
+
+        composable(
+            route = MainScreenScreen.Location.route,
+            arguments = MainScreenScreen.Location.arguments
+        ) {
 //            LocationScreen()
         }
+
         composable(
-            route = "profile/{profileId}",
-            arguments = listOf(navArgument("profileId") { type = NavType.IntType })
+            route = MainScreenScreen.Profile.route,
+            arguments = MainScreenScreen.Profile.arguments
         ) { backStackEntry ->
             val profileId = backStackEntry.arguments?.getInt("profileId")
             LaunchedEffect(profileId) {
@@ -97,6 +131,15 @@ fun MainScreen(
                     initialProfile = profileId
                 )
             }
+        }
+
+        composable(
+            route = MainScreenScreen.Conversation.route,
+            arguments = MainScreenScreen.Conversation.arguments
+        ) {
+            ConversationScreen(
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

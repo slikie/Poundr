@@ -10,7 +10,7 @@ import dagger.hilt.android.HiltAndroidApp
 private const val TAG = "App"
 
 @HiltAndroidApp
-class App : Application() {
+class PoundrApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()

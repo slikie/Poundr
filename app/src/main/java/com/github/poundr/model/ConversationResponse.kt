@@ -5,9 +5,9 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 class ConversationResponse(
-    @Json(name = "conversationId") val conversationId: String?,
+    @Json(name = "conversationId") val conversationId: String,
     @Json(name = "name") val name: String?,
-    @Json(name = "participants") val participants: List<ConversationParticipantResponse>?,
+    @Json(name = "participants") val participants: List<ConversationParticipantResponse>,
     @Json(name = "preview") val preview: ConversationPreviewResponse?,
     @Json(name = "unreadCount") val unreadCount: Int?,
     @Json(name = "lastActivityTimestamp") val lastActivityTimestamp: Long?,

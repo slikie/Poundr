@@ -94,6 +94,10 @@ dependencies {
     implementation(libs.google.accompanist.permissions)
     implementation(libs.google.accompanist.webview)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
 }
 
 // Allow references to generated code

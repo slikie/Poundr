@@ -46,7 +46,12 @@ class MainViewModel @Inject constructor(
             .build()
 
         poundrLocationManager.getLocationUpdates(request).collect {
-            userManager.putLocation(GeoHash.encode(it.latitude, it.longitude, GeoHash.MAX_PRECISION))
+            try {
+                userManager.putLocation(GeoHash.encode(it.latitude, it.longitude, GeoHash.MAX_PRECISION))
+            } catch (e: Exception) {
+                // TODO: Handle exception
+                throw e
+            }
         }
     }
 

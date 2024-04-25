@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import androidx.core.content.ContextCompat
-import com.github.poundr.App
+import com.github.poundr.PoundrApplication
 import com.github.poundr.UserManager
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -64,8 +64,8 @@ class HeaderRequestInterceptor @Inject constructor(
 
     private fun getUserAgent(): String {
         val userManager = lazyUserManager.get()
-        val versionName = App.SPOOFED_VERSION_NAME
-        val versionCode = App.SPOOFED_VERSION_CODE
+        val versionName = PoundrApplication.SPOOFED_VERSION_NAME
+        val versionCode = PoundrApplication.SPOOFED_VERSION_CODE
         val userRoleTitleCase = userManager.role.nameTitleCase
         val versionRelease = Build.VERSION.RELEASE
         val model = fixString(Build.MODEL)

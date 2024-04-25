@@ -2,7 +2,7 @@ package com.github.poundr.di
 
 import com.github.poundr.ImageRepository
 import com.github.poundr.model.ServerDrivenCascadeApiItem
-import com.github.poundr.network.ChatRestService
+import com.github.poundr.network.ConversationService
 import com.github.poundr.network.GrindrAuthenticator
 import com.github.poundr.network.HeaderRequestInterceptor
 import com.github.poundr.network.LoginRestService
@@ -100,7 +100,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideChatRestService(retrofit: Retrofit): ChatRestService {
-        return retrofit.create(ChatRestService::class.java)
+    fun provideChatRestService(retrofit: Retrofit): ConversationService {
+        return retrofit.create(ConversationService::class.java)
     }
 }
