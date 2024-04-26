@@ -3,7 +3,7 @@ package com.github.poundr.network
 import android.util.Log
 import com.github.poundr.location.GeoHash
 import com.github.poundr.location.PoundrLocationManager
-import com.github.poundr.model.ServerDrivenCascadeApiItem
+import com.github.poundr.network.model.ServerDrivenCascadeApiItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

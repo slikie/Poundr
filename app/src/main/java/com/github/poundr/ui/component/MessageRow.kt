@@ -32,6 +32,7 @@ import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun MessageRow(
+    modifier: Modifier = Modifier,
     imageId: String?,
     name: String,
     lastMessage: String,
@@ -51,7 +52,7 @@ fun MessageRow(
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(100.dp)
             .clickable(onClick = onClick),

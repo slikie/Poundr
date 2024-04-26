@@ -3,7 +3,7 @@ package com.github.poundr
 import android.app.Application
 import android.content.pm.PackageManager
 import android.content.pm.Signature
-import com.github.poundr.hack.GrindrPackageManager
+import com.github.poundr.utils.GrindrPackageManager
 import com.google.firebase.installations.remote.FirebaseInstallationServiceClient
 import dagger.hilt.android.HiltAndroidApp
 

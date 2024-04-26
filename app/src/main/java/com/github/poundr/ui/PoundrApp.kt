@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.poundr.BuildConfig
+import com.github.poundr.ui.component.ShakeForDebug
+import com.github.poundr.ui.screen.DebugScreen
 import com.github.poundr.ui.screen.LoginScreen
 import com.github.poundr.ui.screen.MainScreen
 import com.github.poundr.ui.theme.PoundrTheme
@@ -40,6 +43,26 @@ fun PoundrApp(
                 }
                 composable("main") {
                     MainScreen(mainViewModel)
+                }
+                if (BuildConfig.DEBUG) {
+                    composable("debug") {
+                        DebugScreen()
+                    }
+                }
+            }
+        }
+    }
+
+    if (BuildConfig.DEBUG) {
+        ShakeForDebug {
+            navController.navigate("debug") {
+                launchSingleTop = true
+                anim {
+                    // Remove all animations
+                    enter = 0
+                    exit = 0
+                    popEnter = 0
+                    popExit = 0
                 }
             }
         }

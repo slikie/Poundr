@@ -1,6 +1,6 @@
 package com.github.poundr.network
 
-import com.github.poundr.model.ServerDrivenCascadePage
+import com.github.poundr.network.model.ServerDrivenCascadePage
 import retrofit2.http.GET
 import retrofit2.http.Query
 

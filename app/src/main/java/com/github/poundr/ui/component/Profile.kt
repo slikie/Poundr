@@ -25,8 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.github.poundr.R
-import com.github.poundr.model.PartialProfileItemData
-import com.github.poundr.model.ProfileItemData
+import com.github.poundr.network.model.PartialProfileItemData
+import com.github.poundr.network.model.ProfileItemData
 
 @Composable
 fun Profile(

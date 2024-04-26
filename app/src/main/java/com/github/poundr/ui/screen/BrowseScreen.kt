@@ -2,6 +2,7 @@ package com.github.poundr.ui.screen
 
 import android.Manifest
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,8 +26,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.poundr.model.ServerDrivenCascadeApiItem
+import com.github.poundr.network.model.ServerDrivenCascadeApiItem
 import com.github.poundr.ui.component.GridProfile
 import com.github.poundr.vm.BrowseViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -65,7 +67,8 @@ fun BrowseScreen(
                         }
                     }
                 )
-            }
+            },
+            contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
         ) { innerPadding ->
             val refreshing = viewModel.refreshing.collectAsState().value
             val profiles = viewModel.profiles.collectAsState().value
@@ -89,7 +92,7 @@ fun BrowseScreen(
                         when (profile) {
                             is ServerDrivenCascadeApiItem.Profile -> {
                                 GridProfile(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth().animateItem(),
                                     imageId = profile.data.photoMediaHashes?.firstOrNull(),
                                     name = profile.data.displayName ?: "",
                                     onClick = { onBrowseProfile(index) }
@@ -97,7 +100,7 @@ fun BrowseScreen(
                             }
                             is ServerDrivenCascadeApiItem.PartialProfile -> {
                                 GridProfile(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier.fillMaxWidth().animateItem(),
                                     imageId = profile.data.photoMediaHashes?.firstOrNull(),
                                     name = profile.data.displayName ?: "",
                                     onClick = { onBrowseProfile(index) }

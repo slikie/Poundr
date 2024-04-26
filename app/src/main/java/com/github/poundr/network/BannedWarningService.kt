@@ -1,6 +1,6 @@
 package com.github.poundr.network
 
-import com.github.poundr.model.BannedWarningList
+import com.github.poundr.network.model.BannedWarningList
 import retrofit2.http.PUT
 
 interface BannedWarningService {

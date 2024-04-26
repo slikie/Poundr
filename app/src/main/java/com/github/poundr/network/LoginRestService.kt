@@ -1,9 +1,8 @@
 package com.github.poundr.network
 
-import com.github.poundr.model.AuthResponse
-import com.github.poundr.model.FcmPushRequest
-import com.github.poundr.model.LoginEmailRequest
-import retrofit2.Response
+import com.github.poundr.network.model.AuthResponse
+import com.github.poundr.network.model.FcmPushRequest
+import com.github.poundr.network.model.LoginEmailRequest
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST

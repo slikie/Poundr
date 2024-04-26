@@ -46,15 +46,16 @@ fun MessagesScreen(
             ) {
                 items(
                     count = messages.itemCount,
-                    key = messages.itemKey { it.conversation.id }
+                    key = messages.itemKey { it.id }
                 ) { index ->
                     val message = messages[index]!!
                     MessageRow(
-                        imageId = message.participants.firstOrNull()?.primaryPhotoId,
-                        name = message.conversation.name ?: "",
-                        lastMessage = "",
-                        lastMessageTime = 0,
-                        onClick = { onConversationClick(message.conversation.id) }
+                        modifier = Modifier.animateItem(),
+                        imageId = message.profilePicHash,
+                        name = message.name ?: "<no name>",
+                        lastMessage = message.preview?.text ?: "<no message>",
+                        lastMessageTime = message.lastActivityTimestamp,
+                        onClick = { onConversationClick(message.id) }
                     )
                 }
             }

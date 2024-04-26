@@ -1,8 +1,8 @@
 package com.github.poundr.network
 
-import com.github.poundr.model.ConversationResponse
-import com.github.poundr.model.ConversationsResponse
-import com.github.poundr.model.InboxFilterRequest
+import com.github.poundr.network.model.ConversationResponse
+import com.github.poundr.network.model.ConversationsResponse
+import com.github.poundr.network.model.InboxFilterRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Query

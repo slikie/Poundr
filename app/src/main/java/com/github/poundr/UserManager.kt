@@ -8,13 +8,13 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.github.poundr.model.AuthResponse
-import com.github.poundr.model.FcmPushRequest
-import com.github.poundr.model.LoginEmailRequest
 import com.github.poundr.model.Role
-import com.github.poundr.model.UpdateLocationRequest
 import com.github.poundr.network.LoginRestService
 import com.github.poundr.network.SettingsRestService
+import com.github.poundr.network.model.AuthResponse
+import com.github.poundr.network.model.FcmPushRequest
+import com.github.poundr.network.model.LoginEmailRequest
+import com.github.poundr.network.model.UpdateLocationRequest
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -115,44 +116,21 @@ class UserManager @Inject constructor(
 
     suspend fun pushFcmToken() {
         withContext(Dispatchers.IO) {
-            val installationId = suspendCoroutine { continuation ->
-                FirebaseInstallations.getInstance().id.addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        continuation.resume(it.result)
-                    } else {
-                        continuation.resume(null)
-                    }
-                }
-            }
+            try {
+                val installationId = FirebaseInstallations.getInstance().id.await()
+                val firebaseToken = FirebaseMessaging.getInstance().token.await()
 
-            val firebaseToken = suspendCoroutine { continuation ->
-                FirebaseMessaging.getInstance().token.addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        continuation.resume(it.result)
-                    } else {
-                        continuation.resume(null)
-                    }
-                }
-            }
-
-            if (installationId == null) {
-                Log.d(TAG, "pushFcmToken: Installation ID is null")
-                return@withContext
-            }
-
-            if (firebaseToken == null) {
-                Log.d(TAG, "pushFcmToken: Firebase token is null")
-                return@withContext
-            }
-
-            loginRestService.postGcmPushTokens(
-                FcmPushRequest(
-                    vendorProvidedIdentifier = installationId,
-                    token = firebaseToken
+                loginRestService.postGcmPushTokens(
+                    FcmPushRequest(
+                        vendorProvidedIdentifier = installationId,
+                        token = firebaseToken
+                    )
                 )
-            )
 
-            shouldSendFcmToken = false
+                shouldSendFcmToken = false
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to push FCM token", e)
+            }
         }
     }
 

@@ -1,13 +1,14 @@
 package com.github.poundr.di
 
 import com.github.poundr.ImageRepository
-import com.github.poundr.model.ServerDrivenCascadeApiItem
 import com.github.poundr.network.ConversationService
 import com.github.poundr.network.GrindrAuthenticator
 import com.github.poundr.network.HeaderRequestInterceptor
 import com.github.poundr.network.LoginRestService
 import com.github.poundr.network.ServerDrivenCascadeService
 import com.github.poundr.network.SettingsRestService
+import com.github.poundr.network.model.ServerDrivenCascadeApiItem
+import com.github.poundr.network.model.WebSocketResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module
@@ -42,7 +43,12 @@ class NetworkModule {
                     .withSubtype(ServerDrivenCascadeApiItem.FavoritesNoXtraResults::class.java, ServerDrivenCascadeApiItem.FAVS_NO_XTRA_RESULTS)
                     .withSubtype(ServerDrivenCascadeApiItem.PartialProfile::class.java, ServerDrivenCascadeApiItem.PARTIAL_PROFILE)
                     .withSubtype(ServerDrivenCascadeApiItem.Profile::class.java, ServerDrivenCascadeApiItem.FULL_PROFILE)
-                    .withDefaultValue(ServerDrivenCascadeApiItem.Unknown())
+                    .withDefaultValue(ServerDrivenCascadeApiItem.Unknown)
+            )
+            .add(
+                PolymorphicJsonAdapterFactory.of(WebSocketResponse::class.java, WebSocketResponse.KEY)
+                    .withSubtype(WebSocketResponse.ConnectionEstablished::class.java, WebSocketResponse.CONNECTION_ESTABLISHED)
+                    .withDefaultValue(WebSocketResponse.Unknown)
             )
             .build()
     }

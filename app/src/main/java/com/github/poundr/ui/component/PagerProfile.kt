@@ -10,7 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.poundr.model.ServerDrivenCascadeApiItem
+import com.github.poundr.network.model.ServerDrivenCascadeApiItem
 import com.github.poundr.vm.BrowseViewModel
 
 @Composable

@@ -1,6 +1,6 @@
 package com.github.poundr.network
 
-import com.github.poundr.model.UpdateLocationRequest
+import com.github.poundr.network.model.UpdateLocationRequest
 import retrofit2.http.Body
 import retrofit2.http.PUT
 
