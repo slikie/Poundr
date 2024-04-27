@@ -71,7 +71,7 @@ fun HomeScreen(
                 )
             }
             composable(HomeRoute.MESSAGES.route) {
-                MessagesScreen(
+                ConversationsScreen(
                     onConversationClick = onConversationClick
                 )
             }

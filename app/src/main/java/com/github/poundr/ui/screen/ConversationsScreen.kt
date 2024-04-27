@@ -1,5 +1,6 @@
 package com.github.poundr.ui.screen
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -22,7 +24,7 @@ import com.github.poundr.vm.MessagesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessagesScreen(
+fun ConversationsScreen(
     viewModel: MessagesViewModel = hiltViewModel(),
     onConversationClick: (String) -> Unit
 ) {
@@ -33,8 +35,10 @@ fun MessagesScreen(
                 title = {
                     Text("Messages")
                 },
+                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
             )
-        }
+        },
+        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
     ) { innerPadding ->
         val listState = rememberLazyListState()
         val messages = viewModel.messages.flow.collectAsLazyPagingItems()

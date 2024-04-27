@@ -45,7 +45,8 @@ fun BrowseScreen(
                             contentDescription = "Profile"
                         )
                     }
-                }
+                },
+                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
             )
         },
         contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)

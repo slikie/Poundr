@@ -40,15 +40,11 @@ class ConversationRemoteMediator(
                 pageKey = pageToLoad
             )
 
-            Log.d(TAG, "Loaded page $pageToLoad with ${response.messages.size} messages")
-
             poundrDatabase.withTransaction {
                 response.messages.forEach { conversation ->
 
                 }
             }
-
-            Log.d(TAG, "Inserted ${response.messages.size} messages")
 
             nextPage = response.messages.sortedBy { it.timestamp }.lastOrNull()?.messageId
 

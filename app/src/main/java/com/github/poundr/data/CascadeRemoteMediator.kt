@@ -78,8 +78,6 @@ class CascadeRemoteMediator(
                 favorites = cascadeRequestArgs.favorites
             )
 
-            Log.d(TAG, "Loaded page $pageToLoad with ${response.items.size} items")
-
             poundrDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     cascadeDao.deleteAllCascadeItems()
@@ -191,8 +189,6 @@ class CascadeRemoteMediator(
                     }
                 }
             }
-
-            Log.d(TAG, "Inserted ${response.items.size} items")
 
             nextPage = response.nextPage
 

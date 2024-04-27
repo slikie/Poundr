@@ -47,8 +47,6 @@ class ConversationsRemoteMediator(
             )
             )
 
-            Log.d(TAG, "Loaded page $pageToLoad with ${response.entries.size} conversations")
-
             poundrDatabase.withTransaction {
                 response.entries.forEach { conversation ->
                     val participant = conversation.participants.first()
@@ -61,7 +59,6 @@ class ConversationsRemoteMediator(
                         lastSeen = participant.lastOnline,
                     )
                     userDao.upsertUserFromConversation(user)
-                    Log.d(TAG, "Inserted user: $user")
 
                     val conversationEntity = ConversationEntity(
                         id = conversation.conversationId,
@@ -72,7 +69,6 @@ class ConversationsRemoteMediator(
                         unreadCount = conversation.unreadCount ?: 0,
                     )
                     conversationDao.insertConversation(conversationEntity)
-                    Log.d(TAG, "Inserted conversation: $conversationEntity")
 
                     conversation.preview?.let {
                         val previewEntity = ConversationPreviewEntity(
@@ -91,12 +87,9 @@ class ConversationsRemoteMediator(
                             url = it.url
                         )
                         conversationDao.insertConversationPreview(previewEntity)
-                        Log.d(TAG, "Inserted preview: $previewEntity")
                     }
                 }
             }
-
-            Log.d(TAG, "Inserted ${response.entries.size} conversations")
 
             nextPage = response.nextPage
 
