@@ -81,9 +81,11 @@ class CascadeRemoteMediator(
             Log.d(TAG, "Loaded page $pageToLoad with ${response.items.size} items")
 
             poundrDatabase.withTransaction {
-                cascadeDao.deleteAllCascadeItems()
+                if (loadType == LoadType.REFRESH) {
+                    cascadeDao.deleteAllCascadeItems()
+                }
 
-                response.items.forEach { item ->
+                response.items.forEachIndexed { index, item ->
                     when (item) {
                         is ServerDrivenCascadeApiItem.PartialProfile -> {
                             //   @PrimaryKey val id: Long,
@@ -122,7 +124,8 @@ class CascadeRemoteMediator(
                             userDao.upsertUserFromPartialProfile(user)
 
                             val cascadeItem = CascadeItemEntity(
-                                profileId = item.data.profileId
+                                profileId = item.data.profileId,
+                                position = state.lastItemOrNull()?.position?.plus(index) ?: index
                             )
                             cascadeDao.insertCascadeItem(cascadeItem)
 
@@ -178,7 +181,8 @@ class CascadeRemoteMediator(
                             userDao.upsertUser(user)
 
                             val cascadeItem = CascadeItemEntity(
-                                profileId = item.data.profileId
+                                profileId = item.data.profileId,
+                                position = state.lastItemOrNull()?.position?.plus(index) ?: index
                             )
                             cascadeDao.insertCascadeItem(cascadeItem)
 

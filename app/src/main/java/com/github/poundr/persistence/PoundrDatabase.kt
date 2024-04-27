@@ -14,7 +14,7 @@ import com.github.poundr.persistence.model.UserEntity
         ConversationEntity::class,
         ConversationPreviewEntity::class,
     ],
-    version = 5
+    version = 6
 )
 abstract class PoundrDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

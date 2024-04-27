@@ -15,5 +15,6 @@ import androidx.room.PrimaryKey
     ]
 )
 data class CascadeItemEntity(
-    @PrimaryKey val profileId: Long
+    @PrimaryKey val profileId: Long,
+    val position: Int
 )

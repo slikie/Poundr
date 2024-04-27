@@ -7,4 +7,5 @@ data class CascadeItem(
     val lastOnline: Long,
     val favorite: Boolean,
     val unreadCount: Int,
+    val position: Int
 )
