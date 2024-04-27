@@ -48,7 +48,7 @@ interface ConversationDao {
             user.favorite AS favorite
         FROM 
             ConversationEntity AS conversation 
-            JOIN ConversationPreviewEntity AS preview ON conversation.id = preview.conversationId
+            LEFT JOIN ConversationPreviewEntity AS preview ON conversation.id = preview.conversationId
             JOIN UserEntity AS user ON conversation.participantId = user.id
         ORDER BY conversation.lastActivityTimestamp DESC
     """)

@@ -1,12 +1,18 @@
 package com.github.poundr.network
 
 import android.util.Log
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import com.github.poundr.data.CascadeRemoteMediator
+import com.github.poundr.data.model.CascadeRequestArgs
 import com.github.poundr.location.GeoHash
 import com.github.poundr.location.PoundrLocationManager
 import com.github.poundr.network.model.ServerDrivenCascadeApiItem
+import com.github.poundr.persistence.PoundrDatabase
+import com.github.poundr.ui.model.CascadeItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -14,11 +20,29 @@ import javax.inject.Singleton
 
 @Singleton
 class ServerDrivenCascadeRepository @Inject constructor(
-    private val serverDrivenCascadeService: ServerDrivenCascadeService,
-    private val poundrLocationManager: PoundrLocationManager
+    private val poundrLocationManager: PoundrLocationManager,
+    private val poundrDatabase: PoundrDatabase,
+    private val serverDrivenCascadeService: ServerDrivenCascadeService
 ) {
-    private val _profiles = MutableStateFlow(emptyList<ServerDrivenCascadeApiItem>())
-    val profiles = _profiles.asStateFlow()
+    @OptIn(ExperimentalPagingApi::class)
+    fun getMessages(
+        isCascade: Boolean,
+    ): Pager<Int, CascadeItem> {
+        val location = runBlocking { poundrLocationManager.getLastLocation() ?: poundrLocationManager.getCurrentLocation()!! }
+        val geohash = GeoHash.encode(location.latitude, location.longitude, GeoHash.MAX_PRECISION)
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = CascadeRemoteMediator(
+                isCascade,
+                CascadeRequestArgs(
+                    nearbyGeoHash = geohash,
+                ),
+                poundrDatabase,
+                serverDrivenCascadeService
+            ),
+            pagingSourceFactory = { poundrDatabase.cascadeDao().getCascadeItemsPagingSource() }
+        )
+    }
 
     suspend fun fetchData() = withContext(Dispatchers.IO) {
         try {
@@ -64,7 +88,7 @@ class ServerDrivenCascadeRepository @Inject constructor(
                 }
             }
 
-            _profiles.value = items
+//            _profiles.value = items
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is HttpException) {

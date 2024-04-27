@@ -25,34 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.github.poundr.R
-import com.github.poundr.network.model.PartialProfileItemData
-import com.github.poundr.network.model.ProfileItemData
-
-@Composable
-fun Profile(
-    data: ProfileItemData
-) {
-    Profile(
-        photoMediaHashes = data.photoMediaHashes ?: emptyList(),
-        displayName = data.displayName ?: "",
-        age = data.age ?: 0,
-        distance = data.distanceMeters ?: 0.0,
-        aboutMe = data.aboutMe ?: ""
-    )
-}
-
-@Composable
-fun Profile(
-    data: PartialProfileItemData
-) {
-    Profile(
-        photoMediaHashes = data.photoMediaHashes ?: emptyList(),
-        displayName = data.displayName ?: "",
-        age = 0,
-        distance = data.distanceMeters ?: 0.0,
-        aboutMe = ""
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

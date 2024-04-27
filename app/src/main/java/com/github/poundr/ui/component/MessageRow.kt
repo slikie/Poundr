@@ -34,8 +34,8 @@ import kotlin.time.Duration.Companion.minutes
 fun MessageRow(
     modifier: Modifier = Modifier,
     imageId: String?,
-    name: String,
-    lastMessage: String,
+    name: String?,
+    lastMessage: String?,
     lastMessageTime: Long,
     onClick: () -> Unit
 ) {
@@ -85,11 +85,11 @@ fun MessageRow(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = name,
+                text = name ?: "",
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                text = lastMessage,
+                text = lastMessage ?: "",
                 modifier = Modifier.fillMaxWidth()
             )
         }

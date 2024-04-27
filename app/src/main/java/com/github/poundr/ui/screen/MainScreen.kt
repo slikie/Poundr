@@ -16,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.github.poundr.ui.component.PagerProfile
+import com.github.poundr.ui.component.PagerProfileScreen
 import com.github.poundr.vm.MainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -127,7 +127,7 @@ fun MainScreen(
                 Log.d("MainScreen", "Profile ID: $profileId")
             }
             if (profileId != null) {
-                PagerProfile(
+                PagerProfileScreen(
                     initialProfile = profileId
                 )
             }

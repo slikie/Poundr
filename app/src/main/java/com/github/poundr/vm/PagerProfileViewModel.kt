@@ -6,8 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class BrowseViewModel @Inject constructor(
+class PagerProfileViewModel @Inject constructor(
     serverDrivenCascadeRepository: ServerDrivenCascadeRepository,
 ) : ViewModel() {
-    val profiles = serverDrivenCascadeRepository.getMessages(true)
+    val profiles = serverDrivenCascadeRepository.getMessages(false)
 }

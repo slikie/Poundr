@@ -29,7 +29,7 @@ import com.github.poundr.R
 fun GridProfile(
     modifier: Modifier = Modifier,
     imageId: String?,
-    name: String,
+    name: String?,
     onClick: () -> Unit
 ) {
     Box(
@@ -55,7 +55,7 @@ fun GridProfile(
         }
 
         Text(
-            text = name,
+            text = name ?: "<no name>",
             modifier = Modifier
                 .fillMaxWidth()
                 .background(

@@ -13,9 +13,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class PoundrLocationManager @Inject constructor(
@@ -40,16 +40,12 @@ class PoundrLocationManager @Inject constructor(
     }
 
     @RequiresPermission(anyOf = ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"])
-    suspend fun getCurrentLocation() = suspendCoroutine<Location?> {
-        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null)
-            .addOnSuccessListener { location -> it.resumeWith(Result.success(location)) }
-            .addOnFailureListener { e -> it.resumeWith(Result.failure(e)) }
+    suspend fun getCurrentLocation(): Location {
+        return fusedLocationClient.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, null).await()
     }
 
     @RequiresPermission(anyOf = ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"])
-    suspend fun getLastLocation() = suspendCoroutine<Location?> {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location -> it.resumeWith(Result.success(location)) }
-            .addOnFailureListener { e -> it.resumeWith(Result.failure(e)) }
+    suspend fun getLastLocation(): Location {
+        return fusedLocationClient.lastLocation.await()
     }
 }

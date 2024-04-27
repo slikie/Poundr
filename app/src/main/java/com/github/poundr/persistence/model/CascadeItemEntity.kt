@@ -9,16 +9,11 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = UserEntity::class,
             parentColumns = ["id"],
-            childColumns = ["participantId"],
+            childColumns = ["profileId"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
-data class ConversationEntity(
-    @PrimaryKey val id: String,
-    val participantId: Long,
-    var muted: Boolean,
-    var pinned: Boolean,
-    var lastActivityTimestamp: Long,
-    var unreadCount: Int,
+data class CascadeItemEntity(
+    @PrimaryKey val profileId: Long
 )

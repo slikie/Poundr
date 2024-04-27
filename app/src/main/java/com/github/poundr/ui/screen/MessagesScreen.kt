@@ -3,11 +3,14 @@ package com.github.poundr.ui.screen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
@@ -33,16 +36,29 @@ fun MessagesScreen(
             )
         }
     ) { innerPadding ->
+        val listState = rememberLazyListState()
         val messages = viewModel.messages.flow.collectAsLazyPagingItems()
         val isRefreshing = messages.loadState.refresh == LoadState.Loading
+
+        LaunchedEffect(messages) {
+            snapshotFlow { messages.itemCount }
+                .collect { itemCount ->
+                    if (itemCount > 0 && listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
+                        listState.scrollToItem(0)
+                    }
+                }
+        }
 
         PullRefreshBox(
             refreshing = isRefreshing,
             onRefresh = { messages.refresh() },
-            modifier = Modifier.fillMaxSize().padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                state = listState
             ) {
                 items(
                     count = messages.itemCount,
@@ -52,8 +68,8 @@ fun MessagesScreen(
                     MessageRow(
                         modifier = Modifier.animateItem(),
                         imageId = message.profilePicHash,
-                        name = message.name ?: "<no name>",
-                        lastMessage = message.preview?.text ?: "<no message>",
+                        name = message.name,
+                        lastMessage = message.preview?.text,
                         lastMessageTime = message.lastActivityTimestamp,
                         onClick = { onConversationClick(message.id) }
                     )
