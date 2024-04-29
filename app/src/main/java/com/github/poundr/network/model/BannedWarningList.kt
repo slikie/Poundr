@@ -5,5 +5,5 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class BannedWarningList(
-    @Json(name = "warnings") val warnings: List<BannedWarning?>?
+    @Json(name = "warnings") val warnings: List<BannedWarning>?
 )

@@ -32,6 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import com.github.poundr.network.model.MessageResponse
 import com.github.poundr.ui.component.JumpToBottom
 import com.github.poundr.ui.component.UserInput
 import com.github.poundr.vm.ConversationViewModel
@@ -43,6 +46,7 @@ fun ConversationScreen(
     viewModel: ConversationViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
+    val messages = viewModel.messages.flow.collectAsLazyPagingItems()
     val scope = rememberCoroutineScope()
     val scrollState = rememberLazyListState()
 
@@ -89,8 +93,22 @@ fun ConversationScreen(
                     state = scrollState,
                     reverseLayout = true,
                 ) {
-                    items(100) {
-                        Text("Item $it")
+                    items(
+                        count = messages.itemCount,
+                        key = messages.itemKey { it.id },
+                        contentType = { messages[it]?.type }
+                    ) {
+                        val message = messages[it]
+                        if (message != null) {
+                            when (message.type) {
+                                MessageResponse.TEXT -> {
+                                    Text(text = message.textText!!)
+                                }
+                                else -> {
+                                    Text(text = "Unsupported message (type: ${message.type})")
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -134,7 +152,9 @@ fun ConversationScreen(
                 },
                 // let this element handle the padding so that the elevation is shown behind the
                 // navigation bar
-                modifier = Modifier.navigationBarsPadding().imePadding()
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .imePadding()
             )
         }
     }

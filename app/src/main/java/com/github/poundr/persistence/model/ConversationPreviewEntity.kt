@@ -15,8 +15,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class ConversationPreviewEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val conversationId: String,
+    @PrimaryKey val conversationId: String,
     val albumContentId: Long?,
     val albumContentReply: String?,
     val albumId: Long?,

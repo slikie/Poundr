@@ -1,6 +1,5 @@
 package com.github.poundr.data.model
 
-data class ConversationRequestArgs(
+data class ConversationMessagesRequestArgs(
     val conversationId: String,
-    val pageKey: String?,
 )

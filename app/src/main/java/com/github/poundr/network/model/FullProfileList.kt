@@ -5,5 +5,5 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class FullProfileList(
-    @Json(name = "profiles") val profiles: List<ResponseProfile?>?
+    @Json(name = "profiles") val profiles: List<ResponseProfile>?
 )

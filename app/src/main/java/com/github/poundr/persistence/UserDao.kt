@@ -1,8 +1,6 @@
 package com.github.poundr.persistence
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -10,7 +8,7 @@ import com.github.poundr.persistence.model.UserEntity
 
 @Dao
 interface UserDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertUser(user: UserEntity)
 
     @Query("DELETE FROM UserEntity WHERE id = :id")

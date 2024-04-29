@@ -2,15 +2,14 @@ package com.github.poundr.persistence
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.github.poundr.persistence.model.CascadeItemEntity
 import com.github.poundr.ui.model.CascadeItem
 
 @Dao
 interface CascadeDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertCascadeItem(cascadeItem: CascadeItemEntity)
 
     @Query("DELETE FROM CascadeItemEntity")

@@ -2,8 +2,10 @@ package com.github.poundr.di
 
 import android.content.Context
 import androidx.room.Room
+import com.github.poundr.persistence.CascadeDao
 import com.github.poundr.persistence.ConversationDao
 import com.github.poundr.persistence.PoundrDatabase
+import com.github.poundr.persistence.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +25,16 @@ class PersistenceModule {
         return Room.databaseBuilder(context, PoundrDatabase::class.java, "poundr-db")
             .fallbackToDestructiveMigration() // TODO: Remove this in production
             .build()
+    }
+
+    @Provides
+    fun provideUserDao(poundrDatabase: PoundrDatabase): UserDao {
+        return poundrDatabase.userDao()
+    }
+
+    @Provides
+    fun provideCascadeDao(poundrDatabase: PoundrDatabase): CascadeDao {
+        return poundrDatabase.cascadeDao()
     }
 
     @Provides

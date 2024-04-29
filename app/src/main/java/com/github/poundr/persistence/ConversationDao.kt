@@ -2,20 +2,20 @@ package com.github.poundr.persistence
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Upsert
 import com.github.poundr.persistence.model.ConversationEntity
+import com.github.poundr.persistence.model.ConversationMessageEntity
 import com.github.poundr.persistence.model.ConversationPreviewEntity
 import com.github.poundr.persistence.model.ConversationRowEntity
 
 @Dao
 interface ConversationDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertConversation(conversation: ConversationEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun insertConversationPreview(conversationPreviewEntity: ConversationPreviewEntity): Long
 
     @Query("DELETE FROM ConversationEntity WHERE id = :id")
@@ -28,7 +28,6 @@ interface ConversationDao {
             user.name AS name,
             user.profilePicMediaHash AS profilePicHash,
             conversation.lastActivityTimestamp AS lastActivityTimestamp,
-            preview.id AS "preview.id",
             preview.conversationId AS "preview.conversationId",
             preview.albumContentId AS "preview.albumContentId",
             preview.albumContentReply AS "preview.albumContentReply",
@@ -53,4 +52,10 @@ interface ConversationDao {
         ORDER BY conversation.lastActivityTimestamp DESC
     """)
     fun getConversationRowsPagingSource(): PagingSource<Int, ConversationRowEntity>
+
+    @Upsert
+    suspend fun insertConversationMessage(messageEntity: ConversationMessageEntity)
+
+    @Query("SELECT * FROM ConversationMessageEntity WHERE conversationId = :conversationId ORDER BY timestamp DESC")
+    fun getConversationMessagesPagingSource(conversationId: String): PagingSource<Int, ConversationMessageEntity>
 }

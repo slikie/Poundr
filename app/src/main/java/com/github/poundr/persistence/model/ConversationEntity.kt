@@ -1,5 +1,6 @@
 package com.github.poundr.persistence.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -16,7 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class ConversationEntity(
     @PrimaryKey val id: String,
-    val participantId: Long,
+    @ColumnInfo(index = true) val participantId: Long,
     var muted: Boolean,
     var pinned: Boolean,
     var lastActivityTimestamp: Long,

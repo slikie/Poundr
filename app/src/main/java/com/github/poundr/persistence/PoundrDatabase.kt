@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.github.poundr.persistence.model.CascadeItemEntity
 import com.github.poundr.persistence.model.ConversationEntity
+import com.github.poundr.persistence.model.ConversationMessageEntity
 import com.github.poundr.persistence.model.ConversationPreviewEntity
 import com.github.poundr.persistence.model.UserEntity
 
@@ -13,8 +14,9 @@ import com.github.poundr.persistence.model.UserEntity
         CascadeItemEntity::class,
         ConversationEntity::class,
         ConversationPreviewEntity::class,
+        ConversationMessageEntity::class,
     ],
-    version = 6
+    version = 11
 )
 abstract class PoundrDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

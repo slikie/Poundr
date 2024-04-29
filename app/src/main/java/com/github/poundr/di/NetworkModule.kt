@@ -7,6 +7,7 @@ import com.github.poundr.network.HeaderRequestInterceptor
 import com.github.poundr.network.LoginRestService
 import com.github.poundr.network.ServerDrivenCascadeService
 import com.github.poundr.network.SettingsRestService
+import com.github.poundr.network.model.MessageResponse
 import com.github.poundr.network.model.ServerDrivenCascadeApiItem
 import com.github.poundr.network.model.WebSocketResponse
 import com.squareup.moshi.Moshi
@@ -49,6 +50,25 @@ class NetworkModule {
                 PolymorphicJsonAdapterFactory.of(WebSocketResponse::class.java, WebSocketResponse.KEY)
                     .withSubtype(WebSocketResponse.ConnectionEstablished::class.java, WebSocketResponse.CONNECTION_ESTABLISHED)
                     .withDefaultValue(WebSocketResponse.Unknown)
+            )
+            .add(
+                PolymorphicJsonAdapterFactory.of(MessageResponse::class.java, MessageResponse.KEY)
+                    .withSubtype(MessageResponse.Album::class.java, MessageResponse.ALBUM)
+                    .withSubtype(MessageResponse.AlbumContentReaction::class.java, MessageResponse.ALBUM_CONTENT_REACTION)
+                    .withSubtype(MessageResponse.AlbumContentReply::class.java, MessageResponse.ALBUM_CONTENT_REPLY)
+                    .withSubtype(MessageResponse.Audio::class.java, MessageResponse.AUDIO)
+                    .withSubtype(MessageResponse.ExpiringImage::class.java, MessageResponse.EXPIRING_IMAGE)
+                    .withSubtype(MessageResponse.Video::class.java, MessageResponse.VIDEO)
+                    .withSubtype(MessageResponse.Gaymoji::class.java, MessageResponse.GAYMOJI)
+                    .withSubtype(MessageResponse.Giphy::class.java, MessageResponse.GIPHY)
+                    .withSubtype(MessageResponse.Image::class.java, MessageResponse.IMAGE)
+                    .withSubtype(MessageResponse.Location::class.java, MessageResponse.LOCATION)
+                    .withSubtype(MessageResponse.ProfilePhotoReply::class.java, MessageResponse.PROFILE_PHOTO_REPLY)
+                    .withSubtype(MessageResponse.Retract::class.java, MessageResponse.RETRACT)
+                    .withSubtype(MessageResponse.Text::class.java, MessageResponse.TEXT)
+                    .withSubtype(MessageResponse.Unknown::class.java, MessageResponse.UNKNOWN)
+                    .withSubtype(MessageResponse.NonExpiringVideo::class.java, MessageResponse.NON_EXPIRING_VIDEO)
+                    .withDefaultValue(MessageResponse.Unknown())
             )
             .build()
     }
