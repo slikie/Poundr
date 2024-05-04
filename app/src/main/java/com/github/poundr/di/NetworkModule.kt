@@ -1,5 +1,6 @@
 package com.github.poundr.di
 
+import android.content.Context
 import com.github.poundr.ImageRepository
 import com.github.poundr.network.ConversationService
 import com.github.poundr.network.GrindrAuthenticator
@@ -15,6 +16,7 @@ import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -120,8 +122,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideImageRepository(): ImageRepository {
-        return ImageRepository(MEDIA_CDN_ENDPOINT)
+    fun provideImageRepository(
+        @ApplicationContext context: Context,
+    ): ImageRepository {
+        return ImageRepository(MEDIA_CDN_ENDPOINT, context)
     }
 
     @Provides

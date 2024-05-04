@@ -3,6 +3,8 @@ package com.github.poundr
 import android.app.Application
 import android.content.pm.PackageManager
 import android.content.pm.Signature
+import androidx.core.app.NotificationChannelCompat
+import androidx.core.app.NotificationManagerCompat
 import com.github.poundr.utils.GrindrPackageManager
 import com.google.firebase.installations.remote.FirebaseInstallationServiceClient
 import dagger.hilt.android.HiltAndroidApp
@@ -14,10 +16,25 @@ class PoundrApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()
+        configureCoil()
     }
 
     private fun createNotificationChannels() {
-        // TODO: Create notification channels
+        val notificationManager = NotificationManagerCompat.from(this)
+
+        val chatsChannel = NotificationChannelCompat.Builder("chats", NotificationManagerCompat.IMPORTANCE_HIGH)
+            .setName(getString(R.string.chats))
+            .build()
+        notificationManager.createNotificationChannel(chatsChannel)
+
+        val tapsChannel = NotificationChannelCompat.Builder("taps", NotificationManagerCompat.IMPORTANCE_HIGH)
+            .setName(getString(R.string.taps))
+            .build()
+        notificationManager.createNotificationChannel(tapsChannel)
+    }
+
+    private fun configureCoil() {
+//        Coil.setImageLoader()
     }
 
     private fun isFirebaseInstallationServiceClient() = Thread.currentThread().stackTrace.any {

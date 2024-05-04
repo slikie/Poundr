@@ -151,12 +151,12 @@ sealed class MessageResponse(
 
     @JsonClass(generateAdapter = true)
     class ProfilePhotoReply(
-        @Json(name = "body") var body: Body? = null
+        @Json(name = "body") var body: Body
     ) : MessageResponse() {
         @JsonClass(generateAdapter = true)
         class Body(
-            @Json(name = "imageHash") var imageHash: String? = null,
-            @Json(name = "photoContentReply") var photoContentReply: String? = null
+            @Json(name = "imageHash") var imageHash: String,
+            @Json(name = "photoContentReply") var photoContentReply: String
         )
     }
 
