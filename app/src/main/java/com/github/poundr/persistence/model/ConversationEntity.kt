@@ -18,8 +18,8 @@ import androidx.room.PrimaryKey
 data class ConversationEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(index = true) val participantId: Long,
-    var muted: Boolean,
-    var pinned: Boolean,
+    var muted: Boolean = false,
+    var pinned: Boolean = false,
     var lastActivityTimestamp: Long,
-    var unreadCount: Int,
+    var unreadCount: Int = 0,
 )

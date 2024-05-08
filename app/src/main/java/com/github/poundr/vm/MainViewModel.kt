@@ -1,11 +1,13 @@
 package com.github.poundr.vm
 
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.poundr.UserManager
 import com.github.poundr.location.GeoHash
-import com.github.poundr.location.PoundrLocationManager
+import com.github.poundr.location.LocationRepository
+import com.github.poundr.network.PoundrWebSocket
 import com.google.android.gms.location.LocationRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,10 +18,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
+private const val TAG = "MainViewModel"
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val userManager: UserManager,
-    private val poundrLocationManager: PoundrLocationManager
+    private val locationRepository: LocationRepository,
+    private val poundrWebSocket: PoundrWebSocket,
 ) : ViewModel() {
     private val _startDestination = MutableStateFlow(getStartDestination())
     val startDestination = _startDestination.asStateFlow()
@@ -38,19 +43,26 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun connectWebSocket() {
+        poundrWebSocket.connect()
+    }
+
+    fun disconnectWebSocket() {
+        poundrWebSocket.disconnect()
+    }
+
     @RequiresPermission(anyOf = ["android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"])
     suspend fun updateLocation() = withContext(Dispatchers.IO) {
         val request = LocationRequest.Builder(5.minutes.inWholeMilliseconds)
             .setMinUpdateIntervalMillis(5.minutes.inWholeMilliseconds)
-            .setMaxUpdateAgeMillis(Long.MAX_VALUE)
+            .setMaxUpdateAgeMillis(5.minutes.inWholeMilliseconds)
             .build()
 
-        poundrLocationManager.getLocationUpdates(request).collect {
+        locationRepository.getLocationUpdates(request).collect {
             try {
                 userManager.putLocation(GeoHash.encode(it.latitude, it.longitude, GeoHash.MAX_PRECISION))
             } catch (e: Exception) {
-                // TODO: Handle exception
-                throw e
+                Log.e(TAG, "updateLocation: Failed to update location", e)
             }
         }
     }

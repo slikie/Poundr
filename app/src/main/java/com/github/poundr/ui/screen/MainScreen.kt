@@ -2,7 +2,6 @@ package com.github.poundr.ui.screen
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -10,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -30,9 +30,9 @@ sealed class MainScreenScreen(
     data object Home : MainScreenScreen("home")
     data object Location : MainScreenScreen("location")
     data object Profile : MainScreenScreen(
-        route = "profile/{profileId}",
+        route = "profile/{initialProfileId}",
         arguments = listOf(
-            navArgument("profileId") { type = NavType.IntType }
+            navArgument("initialProfileId") { type = NavType.LongType }
         )
     )
     data object Conversation : MainScreenScreen(
@@ -92,6 +92,11 @@ fun MainScreen(
         }
     }
 
+    LifecycleResumeEffect(Unit) {
+        viewModel.connectWebSocket()
+        onPauseOrDispose { viewModel.disconnectWebSocket() }
+    }
+
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -102,8 +107,8 @@ fun MainScreen(
             arguments = MainScreenScreen.Home.arguments
         ) {
             HomeScreen(
-                onBrowseProfile = { profilePosition ->
-                    navController.navigate("profile/$profilePosition")
+                onBrowseProfile = { profileId ->
+                    navController.navigate("profile/$profileId")
                 },
                 onConversationClick = { conversationId ->
                     navController.navigate("conversation/$conversationId")
@@ -122,15 +127,7 @@ fun MainScreen(
             route = MainScreenScreen.Profile.route,
             arguments = MainScreenScreen.Profile.arguments
         ) { backStackEntry ->
-            val profileId = backStackEntry.arguments?.getInt("profileId")
-            LaunchedEffect(profileId) {
-                Log.d("MainScreen", "Profile ID: $profileId")
-            }
-            if (profileId != null) {
-                PagerProfileScreen(
-                    initialProfile = profileId
-                )
-            }
+            PagerProfileScreen()
         }
 
         composable(

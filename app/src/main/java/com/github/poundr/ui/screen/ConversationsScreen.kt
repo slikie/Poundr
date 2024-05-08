@@ -1,5 +1,6 @@
 package com.github.poundr.ui.screen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.github.poundr.ui.component.MessageRow
 import com.github.poundr.ui.component.PullRefreshBox
+import com.github.poundr.ui.none
 import com.github.poundr.vm.MessagesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,10 +37,10 @@ fun ConversationsScreen(
                 title = {
                     Text("Messages")
                 },
-                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+                windowInsets = WindowInsets.none
             )
         },
-        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+        contentWindowInsets = WindowInsets.none
     ) { innerPadding ->
         val listState = rememberLazyListState()
         val messages = viewModel.messages.flow.collectAsLazyPagingItems()
@@ -55,14 +57,13 @@ fun ConversationsScreen(
 
         PullRefreshBox(
             refreshing = isRefreshing,
-            onRefresh = { messages.refresh() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            onRefresh = messages::refresh,
+            modifier = Modifier.padding(innerPadding).fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                state = listState
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(1.dp)
             ) {
                 items(
                     count = messages.itemCount,

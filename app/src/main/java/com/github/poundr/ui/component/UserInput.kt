@@ -1,5 +1,6 @@
 package com.github.poundr.ui.component
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -41,8 +42,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AlternateEmail
-import androidx.compose.material.icons.outlined.Duo
 import androidx.compose.material.icons.outlined.InsertPhoto
 import androidx.compose.material.icons.outlined.Mood
 import androidx.compose.material.icons.outlined.Place
@@ -78,6 +77,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
@@ -271,12 +271,12 @@ private fun UserInputSelector(
             selected = currentInputSelector == InputSelector.EMOJI,
             description = "emoji_selector_bt_desc"
         )
-        InputSelectorButton(
-            onClick = { onSelectorChange(InputSelector.DM) },
-            icon = Icons.Outlined.AlternateEmail,
-            selected = currentInputSelector == InputSelector.DM,
-            description = "dm_desc"
-        )
+//        InputSelectorButton(
+//            onClick = { onSelectorChange(InputSelector.DM) },
+//            icon = Icons.Outlined.AlternateEmail,
+//            selected = currentInputSelector == InputSelector.DM,
+//            description = "dm_desc"
+//        )
         InputSelectorButton(
             onClick = { onSelectorChange(InputSelector.PICTURE) },
             icon = Icons.Outlined.InsertPhoto,
@@ -289,12 +289,12 @@ private fun UserInputSelector(
             selected = currentInputSelector == InputSelector.MAP,
             description = "map_selector_desc"
         )
-        InputSelectorButton(
-            onClick = { onSelectorChange(InputSelector.PHONE) },
-            icon = Icons.Outlined.Duo,
-            selected = currentInputSelector == InputSelector.PHONE,
-            description = "videochat_desc"
-        )
+//        InputSelectorButton(
+//            onClick = { onSelectorChange(InputSelector.PHONE) },
+//            icon = Icons.Outlined.Duo,
+//            selected = currentInputSelector == InputSelector.PHONE,
+//            description = "videochat_desc"
+//        )
 
         val border = if (!sendMessageEnabled) {
             BorderStroke(
@@ -323,7 +323,7 @@ private fun UserInputSelector(
             contentPadding = PaddingValues(0.dp)
         ) {
             Text(
-                "send",
+                "Send",
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
@@ -421,6 +421,7 @@ private fun UserInputText(
                 }
             }
         }
+        val context = LocalContext.current
         RecordButton(
             recording = isRecordingMessage,
             swipeOffset = { swipeOffset.value },
@@ -428,14 +429,17 @@ private fun UserInputText(
             onStartRecording = {
                 val consumed = !isRecordingMessage
                 isRecordingMessage = true
+                Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show()
                 consumed
             },
             onFinishRecording = {
                 // handle end of recording
                 isRecordingMessage = false
+                Toast.makeText(context, "Recording finished", Toast.LENGTH_SHORT).show()
             },
             onCancelRecording = {
                 isRecordingMessage = false
+                Toast.makeText(context, "Recording cancelled", Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.fillMaxHeight()
         )
@@ -480,7 +484,7 @@ private fun BoxScope.UserInputTextField(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 32.dp),
-            text = "textfield_hint",
+            text = "Say something",
             style = MaterialTheme.typography.bodyLarge.copy(color = disableContentColor)
         )
     }
@@ -543,7 +547,7 @@ private fun RecordingIndicator(swipeOffset: () -> Float) {
                         alpha = 1 - (swipeOffset().absoluteValue / swipeThreshold)
                     },
                 textAlign = TextAlign.Center,
-                text = "swipe_to_cancel_recording",
+                text = "Swipe to cancel recording",
                 style = MaterialTheme.typography.bodyLarge
             )
         }

@@ -1,13 +1,77 @@
 package com.github.poundr.network.model
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-interface WebSocketResponse {
+sealed class WebSocketResponse(
+    @Json(name = "type") var type: String = "",
+    @Json(name = "status") var status: Int? = null
+) {
+    @JsonClass(generateAdapter = true)
+    class ConnectionEstablished(
+        @Json(name = "timestamp") var timestamp: Long,
+    ) : WebSocketResponse()
 
     @JsonClass(generateAdapter = true)
-    class ConnectionEstablished : WebSocketResponse
+    class TapReceived(
+        @Json(name = "ref") var ref: String? = null,
+        @Json(name = "payload") val payload: Payload
+    ) : WebSocketResponse() {
+        @JsonClass(generateAdapter = true)
+        data class Payload(
+            @Json(name = "isMutual") val isMutual: Boolean = false,
+            @Json(name = "recipientId") val recipientId: Long = 0,
+            @Json(name = "senderDisplayName") val senderDisplayName: String? = null,
+            @Json(name = "senderId") val senderId: Long = 0,
+            @Json(name = "senderProfileImageHash") val senderProfileImageHash: String? = null,
+            @Json(name = "tapType") val tapType: Int = 0,
+            @Json(name = "timestamp") val timestamp: Long = 0
+        )
+    }
 
-    object Unknown : WebSocketResponse
+    @JsonClass(generateAdapter = true)
+    class ViewReceived(
+        @Json(name = "ref") var ref: String? = null,
+        @Json(name = "payload") val payload: Payload
+    ) : WebSocketResponse() {
+        @JsonClass(generateAdapter = true)
+        data class Payload(
+            @Json(name = "mostRecent") val mostRecent: MostRecent?,
+            @Json(name = "viewedCount") val viewedCount: Int
+        )
+    }
+
+    @JsonClass(generateAdapter = true)
+    class MessageRead(
+        @Json(name = "payload") val payload: Payload
+    ) : WebSocketResponse() {
+        @JsonClass(generateAdapter = true)
+        data class Payload(
+            @Json(name = "conversationId") val conversationId: String,
+            @Json(name = "profileId") val profileId: String,
+            @Json(name = "timestamp") val timestamp: Long
+        )
+    }
+
+    @JsonClass(generateAdapter = true)
+    class MessageReceived(
+        @Json(name = "ref") var ref: String? = null,
+        @Json(name = "payload") val payload: MessageResponse // TODO: Check ref/refValue field
+    ) : WebSocketResponse()
+
+    @JsonClass(generateAdapter = true)
+    class TypingStatus(
+        @Json(name = "payload") val payload: Payload
+    ) : WebSocketResponse() {
+        @JsonClass(generateAdapter = true)
+        data class Payload(
+            @Json(name = "conversationId") val conversationId: String,
+            @Json(name = "profileId") val profileId: String,
+            @Json(name = "status") val status: String // Cleared, Sent, Typing
+        )
+    }
+
+    object Unknown : WebSocketResponse()
 
     companion object {
         const val KEY = "type"

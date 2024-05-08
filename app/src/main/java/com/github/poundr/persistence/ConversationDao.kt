@@ -54,8 +54,23 @@ interface ConversationDao {
     fun getConversationRowsPagingSource(): PagingSource<Int, ConversationRowEntity>
 
     @Upsert
-    suspend fun insertConversationMessage(messageEntity: ConversationMessageEntity)
+    suspend fun upsertConversationMessage(messageEntity: ConversationMessageEntity)
 
     @Query("SELECT * FROM ConversationMessageEntity WHERE conversationId = :conversationId ORDER BY timestamp DESC")
     fun getConversationMessagesPagingSource(conversationId: String): PagingSource<Int, ConversationMessageEntity>
+
+    @Transaction
+    suspend fun upsertConversationFromMessageResponse(conversation: ConversationEntity) {
+        if (!isConversationExist(conversation.id)) {
+            insertConversation(conversation)
+        } else {
+            updateConversationFromMessageResponse(conversation.id, conversation.participantId, conversation.lastActivityTimestamp)
+        }
+    }
+
+    @Query("UPDATE ConversationEntity SET participantId = :participantId, lastActivityTimestamp = :lastActivityTimestamp WHERE id = :id")
+    suspend fun updateConversationFromMessageResponse(id: String, participantId: Long, lastActivityTimestamp: Long)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM ConversationEntity WHERE id = :id)")
+    suspend fun isConversationExist(id: String): Boolean
 }

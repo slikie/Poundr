@@ -1,5 +1,6 @@
 package com.github.poundr.ui.screen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,13 +24,14 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.github.poundr.ui.component.GridProfile
 import com.github.poundr.ui.component.PullRefreshBox
+import com.github.poundr.ui.none
 import com.github.poundr.vm.BrowseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowseScreen(
     viewModel: BrowseViewModel = hiltViewModel(),
-    onBrowseProfile: (Int) -> Unit
+    onBrowseProfile: (Long) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -46,10 +48,10 @@ fun BrowseScreen(
                         )
                     }
                 },
-                windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+                windowInsets = WindowInsets.none
             )
         },
-        contentWindowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp)
+        contentWindowInsets = WindowInsets.none
     ) { innerPadding ->
         val profiles = viewModel.profiles.flow.collectAsLazyPagingItems()
         val isRefreshing = profiles.loadState.refresh == LoadState.Loading
@@ -62,18 +64,22 @@ fun BrowseScreen(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(1.dp),
+                horizontalArrangement = Arrangement.spacedBy(1.dp)
             ) {
                 items(
                     count = profiles.itemCount,
                     key = profiles.itemKey { it.profileId }
                 ) { index ->
-                    val profile = profiles[index]!!
-                    GridProfile(
-                        modifier = Modifier.fillMaxWidth().animateItem(),
-                        imageId = profile.avatarId,
-                        name = profile.name,
-                        onClick = { onBrowseProfile(index) }
-                    )
+                    val profile = profiles[index]
+                    if (profile != null) {
+                        GridProfile(
+                            modifier = Modifier.fillMaxWidth().animateItem(),
+                            imageId = profile.avatarId,
+                            name = profile.name,
+                            onClick = { onBrowseProfile(profile.profileId) }
+                        )
+                    }
                 }
             }
         }

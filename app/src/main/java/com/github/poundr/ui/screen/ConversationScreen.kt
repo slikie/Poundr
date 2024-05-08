@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -46,6 +47,7 @@ fun ConversationScreen(
     viewModel: ConversationViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
+    val myUserId = viewModel.myUserId
     val messages = viewModel.messages.flow.collectAsLazyPagingItems()
     val scope = rememberCoroutineScope()
     val scrollState = rememberLazyListState()
@@ -93,19 +95,65 @@ fun ConversationScreen(
                     state = scrollState,
                     reverseLayout = true,
                 ) {
+                    //for (index in messages.indices) {
+                    //                val prevAuthor = messages.getOrNull(index - 1)?.author
+                    //                val nextAuthor = messages.getOrNull(index + 1)?.author
+                    //                val content = messages[index]
+                    //                val isFirstMessageByAuthor = prevAuthor != content.author
+                    //                val isLastMessageByAuthor = nextAuthor != content.author
+                    //
+                    //                // Hardcode day dividers for simplicity
+                    //                if (index == messages.size - 1) {
+                    //                    item {
+                    //                        DayHeader("20 Aug")
+                    //                    }
+                    //                } else if (index == 2) {
+                    //                    item {
+                    //                        DayHeader("Today")
+                    //                    }
+                    //                }
+                    //
+                    //                item {
+                    //                    Message(
+                    //                        onAuthorClick = { name -> navigateToProfile(name) },
+                    //                        msg = content,
+                    //                        isUserMe = content.author == authorMe,
+                    //                        isFirstMessageByAuthor = isFirstMessageByAuthor,
+                    //                        isLastMessageByAuthor = isLastMessageByAuthor
+                    //                    )
+                    //                }
+                    //            }
                     items(
                         count = messages.itemCount,
                         key = messages.itemKey { it.id },
                         contentType = { messages[it]?.type }
                     ) {
+                        val prevMessage = if (it == 0) null else messages[it - 1]
                         val message = messages[it]
+                        val nextMessage = if (it == messages.itemCount - 1) null else messages[it + 1]
                         if (message != null) {
-                            when (message.type) {
-                                MessageResponse.TEXT -> {
-                                    Text(text = message.textText!!)
-                                }
-                                else -> {
-                                    Text(text = "Unsupported message (type: ${message.type})")
+                            val isFirstMessageByAuthor = prevMessage?.senderId != message.senderId
+                            val isLastMessageByAuthor = nextMessage?.senderId != message.senderId
+                            val isUserMe = message.senderId == myUserId
+
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                val modifier = Modifier
+                                    .align(
+                                        if (isUserMe) Alignment.CenterEnd else Alignment.CenterStart
+                                    )
+                                when (message.type) {
+                                    MessageResponse.TEXT -> {
+                                        Text(text = message.textText!!, modifier = modifier)
+                                    }
+
+                                    else -> {
+                                        Text(
+                                            text = "Unsupported message (type: ${message.type})",
+                                            modifier = modifier
+                                        )
+                                    }
                                 }
                             }
                         }

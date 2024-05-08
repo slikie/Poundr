@@ -3,16 +3,7 @@ package com.github.poundr.persistence.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(
-//    foreignKeys = [
-//        ForeignKey(
-//            entity = ConversationPreviewEntity::class,
-//            parentColumns = ["id"],
-//            childColumns = ["previewId"],
-//            onDelete = ForeignKey.CASCADE
-//        )
-//    ]
-)
+@Entity
 data class UserEntity(
     @PrimaryKey val id: Long,
     val aboutMe: String? = null,

@@ -31,4 +31,21 @@ interface CascadeDao {
         ORDER BY item.position ASC
     """)
     fun getCascadeItemsPagingSource(): PagingSource<Int, CascadeItem>
+
+//    @Query("""
+//        SELECT
+//            user.id AS profileId,
+//            user.name AS name,
+//            user.profilePicMediaHash AS avatarId,
+//            user.lastSeen AS lastOnline,
+//            user.favorite AS favorite,
+//            conversation.unreadCount AS unreadCount,
+//            item.position AS position
+//        FROM
+//            CascadeItemEntity AS item
+//            JOIN UserEntity AS user ON item.profileId = user.id
+//            LEFT JOIN ConversationEntity AS conversation ON item.profileId = conversation.participantId
+//        ORDER BY item.position ASC
+//    """)
+//    fun getCascadeProfilesPagingSource(): PagingSource<Int, UserEntity>
 }

@@ -38,7 +38,7 @@ private enum class HomeRoute(
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onBrowseProfile: (Int) -> Unit,
+    onBrowseProfile: (Long) -> Unit,
     onConversationClick: (String) -> Unit
 ) {
     val navController = rememberNavController()

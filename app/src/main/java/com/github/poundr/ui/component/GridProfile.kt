@@ -55,7 +55,7 @@ fun GridProfile(
         }
 
         Text(
-            text = name ?: "<no name>",
+            text = name ?: "",
             modifier = Modifier
                 .fillMaxWidth()
                 .background(

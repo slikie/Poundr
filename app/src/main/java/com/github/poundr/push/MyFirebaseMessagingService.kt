@@ -6,10 +6,12 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.github.poundr.ConversationRepository
 import com.github.poundr.ImageRepository
 import com.github.poundr.R
 import com.github.poundr.UserManager
 import com.github.poundr.network.model.MessageResponse
+import com.github.poundr.persistence.ConversationDao
 import com.github.poundr.persistence.UserDao
 import com.github.poundr.push.model.PushEvent
 import com.github.poundr.push.model.TapsReceivedNotification
@@ -33,8 +35,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var moshi: Moshi
     @Inject
     lateinit var userDao: UserDao
+    @Inject lateinit var conversationDao: ConversationDao
     @Inject
     lateinit var imageRepository: ImageRepository
+    @Inject
+    lateinit var conversationRepository: ConversationRepository
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
@@ -78,6 +83,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
                 "chat" -> {
                     // Unused in official app
+                    Log.d(TAG, "onMessageReceived: received unused \"chat\" notification type")
                 }
                 "offline-tap-sent-event-v1" -> {
                     val tapJson = data["tap"] ?: return@launch
@@ -86,14 +92,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     handleTap(tap)
                 }
                 else -> {
-                    Log.d(TAG, "onMessageReceived: unknown notification type ($type)")
+                    Log.d(TAG, "onMessageReceived: unknown notification type: $type")
                 }
             }
         }
-    }
-
-    override fun onDeletedMessages() {
-        Log.d(TAG, "onDeletedMessages() called")
     }
 
     override fun onDestroy() {
@@ -126,23 +128,26 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         senderName: String?,
         senderProfileImageMediaHash: String?
     ) {
-        val notificationManager = NotificationManagerCompat.from(this)
-        val text = when (message) {
-            is MessageResponse.Album -> "Album received"
-            is MessageResponse.Audio -> "Audio received"
-            is MessageResponse.ExpiringImage -> "Expiring image received"
-            is MessageResponse.Video -> "Video received"
-            is MessageResponse.Gaymoji -> "Gaymoji received"
-            is MessageResponse.Giphy -> "Giphy received"
-            is MessageResponse.Image -> "Image received"
-            is MessageResponse.Location -> "Location received"
-            is MessageResponse.ProfilePhotoReply -> message.body.photoContentReply
-            is MessageResponse.Text -> message.body.text
-            is MessageResponse.NonExpiringVideo -> "Non-expiring video received"
-            else -> "Unknown message"
-        }
+        conversationRepository.putMessage(message, senderName, senderProfileImageMediaHash)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            val notificationManager = NotificationManagerCompat.from(this)
+
+            val text = when (message) {
+                is MessageResponse.Album -> "Album received"
+                is MessageResponse.Audio -> "Audio received"
+                is MessageResponse.ExpiringImage -> "Expiring image received"
+                is MessageResponse.Video -> "Video received"
+                is MessageResponse.Gaymoji -> "Gaymoji received"
+                is MessageResponse.Giphy -> "Giphy received"
+                is MessageResponse.Image -> "Image received"
+                is MessageResponse.Location -> "Location received"
+                is MessageResponse.ProfilePhotoReply -> message.body.photoContentReply
+                is MessageResponse.Text -> message.body.text
+                is MessageResponse.NonExpiringVideo -> "Non-expiring video received"
+                else -> "Unknown message"
+            }
+
             val notification = NotificationCompat.Builder(this, "chats")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(senderName ?: "Someone")
@@ -162,6 +167,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 .setWhen(message.timestamp)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build()
+
             notificationManager.notify(getNotificationId("message:${message.conversationId}"), notification)
         }
     }

@@ -7,7 +7,7 @@ import androidx.paging.PagingConfig
 import com.github.poundr.data.CascadeRemoteMediator
 import com.github.poundr.data.model.CascadeRequestArgs
 import com.github.poundr.location.GeoHash
-import com.github.poundr.location.PoundrLocationManager
+import com.github.poundr.location.LocationRepository
 import com.github.poundr.network.model.ServerDrivenCascadeApiItem
 import com.github.poundr.persistence.PoundrDatabase
 import com.github.poundr.ui.model.CascadeItem
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ServerDrivenCascadeRepository @Inject constructor(
-    private val poundrLocationManager: PoundrLocationManager,
+    private val locationRepository: LocationRepository,
     private val poundrDatabase: PoundrDatabase,
     private val serverDrivenCascadeService: ServerDrivenCascadeService
 ) {
@@ -28,7 +28,7 @@ class ServerDrivenCascadeRepository @Inject constructor(
     fun getMessages(
         isCascade: Boolean,
     ): Pager<Int, CascadeItem> {
-        val location = runBlocking { poundrLocationManager.getLastLocation() ?: poundrLocationManager.getCurrentLocation()!! }
+        val location = runBlocking { locationRepository.getLastLocation() ?: locationRepository.getCurrentLocation()!! }
         val geohash = GeoHash.encode(location.latitude, location.longitude, GeoHash.MAX_PRECISION)
         return Pager(
             config = PagingConfig(pageSize = 20),
@@ -46,7 +46,7 @@ class ServerDrivenCascadeRepository @Inject constructor(
 
     suspend fun fetchData() = withContext(Dispatchers.IO) {
         try {
-            val location = poundrLocationManager.getLastLocation() ?: poundrLocationManager.getCurrentLocation() ?: return@withContext
+            val location = locationRepository.getLastLocation() ?: locationRepository.getCurrentLocation() ?: return@withContext
             val geohash = GeoHash.encode(location.latitude, location.longitude, GeoHash.MAX_PRECISION)
             val page = serverDrivenCascadeService.getCascadePage(
                 nearbyGeoHash = geohash,

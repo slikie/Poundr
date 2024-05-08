@@ -18,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PoundrLocationManager @Inject constructor(
+class LocationRepository @Inject constructor(
     @ApplicationContext val context: Context
 ) {
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -27,7 +27,8 @@ class PoundrLocationManager @Inject constructor(
     suspend fun getLocationUpdates(locationRequest: LocationRequest) = callbackFlow {
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.lastLocation?.let { location ->
+                val location = locationResult.lastLocation
+                if (location != null) {
                     trySendBlocking(location)
                 }
             }

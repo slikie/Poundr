@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.github.poundr.model.Role
@@ -36,7 +36,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 /* Persistent auth data */
 private val EMAIL_KEY = stringPreferencesKey("email")
-private val PROFILE_ID_KEY = intPreferencesKey("profile_id")
+private val PROFILE_ID_KEY = longPreferencesKey("profile_id")
 private val XMPP_TOKEN_KEY = stringPreferencesKey("xmpp_token")
 private val SESSION_ID_KEY = stringPreferencesKey("session_id")
 private val AUTH_TOKEN_KEY = stringPreferencesKey("auth_token")
@@ -59,7 +59,7 @@ class UserManager @Inject constructor(
     /* Auth data */
     var email: String = ""
         private set
-    var profileId: Int = 0
+    var profileId: Long = 0
         private set
     var xmppToken: String = ""
         private set
@@ -78,11 +78,11 @@ class UserManager @Inject constructor(
         runBlocking(Dispatchers.IO) {
             val data = context.dataStore.data.first()
             email = data[EMAIL_KEY] ?: ""
-            profileId = data[PROFILE_ID_KEY] ?: 0
+            profileId = data[PROFILE_ID_KEY] ?: 0L
             xmppToken = data[XMPP_TOKEN_KEY] ?: ""
             sessionId = data[SESSION_ID_KEY] ?: ""
             authToken = data[AUTH_TOKEN_KEY] ?: ""
-            _loggedIn.value = (email != null) && profileId != 0 && xmppToken.isNotEmpty() && sessionId.isNotEmpty() && authToken.isNotEmpty()
+            _loggedIn.value = (email != null) && profileId != 0L && xmppToken.isNotEmpty() && sessionId.isNotEmpty() && authToken.isNotEmpty()
             isReady = true
         }
     }
@@ -142,7 +142,7 @@ class UserManager @Inject constructor(
 
     private suspend fun setAuthResponse(email: String, response: AuthResponse) {
         if (
-            response.profileId == null || response.profileId == 0 ||
+            response.profileId == null || response.profileId == 0L ||
             response.xmppToken.isNullOrEmpty() ||
             response.sessionId.isNullOrEmpty() ||
             response.authToken.isNullOrEmpty()
@@ -167,7 +167,7 @@ class UserManager @Inject constructor(
         }
     }
 
-    suspend fun setProfileId(profileId: Int) = withContext(Dispatchers.IO) {
+    suspend fun setProfileId(profileId: Long) = withContext(Dispatchers.IO) {
         this@UserManager.profileId = profileId
         context.dataStore.edit { settings ->
             settings[PROFILE_ID_KEY] = profileId

@@ -88,7 +88,7 @@ fun RecordButton(
             positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
             tooltip = {
                 RichTooltip {
-                    Text("touch_and_hold_to_record")
+                    Text("Touch and hold to record")
                 }
             },
             enableUserInput = false,
@@ -96,7 +96,7 @@ fun RecordButton(
         ) {
             Icon(
                 Icons.Default.Mic,
-                contentDescription = "record_message",
+                contentDescription = "Record message",
                 tint = iconColor.value,
                 modifier = modifier
                     .sizeIn(minWidth = 56.dp, minHeight = 6.dp)
